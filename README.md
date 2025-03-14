@@ -10,8 +10,9 @@ This is a Python package for building Read–Eval–Print Loop (REPL) applicatio
 
 Features:
 
-- Pagination
+- Breadcrumbs
 - Interface panel
+- Pagination
 
 ```shell
 ────────────────────────────────────────────────────────────────
