@@ -7,14 +7,35 @@ from typing import Callable
 
 class Callback(abc.ABC):
     def __init__(self) -> None:
-        self._printer = repli.Printer()
+        pass
+
+    def __call__(self, printer: repli.Printer, *args: str, **kwargs: str) -> bool:
+        raise NotImplementedError
+
+
+class NativeFunction(Callback):
+    def __init__(
+        self,
+        function: Callable[[str, str], None],
+    ) -> None:
+        super().__init__()
+        self._function: Callable[[str, str], None] = function
 
     @property
-    def printer(self) -> repli.Printer:
-        return self._printer
+    def function(self) -> Callable[[str, str], None]:
+        return self._function
 
-    def __call__(self, *args: str, **kwargs: str) -> bool:
-        raise NotImplementedError
+    def __call__(self, printer: repli.Printer, *args: str, **kwargs: str) -> bool:
+        printer.info(f'callback function args: {args}')
+        printer.info(f'callback function kwargs: {kwargs}')
+        try:
+            printer.info('native function begin')
+            self.function(*args, **kwargs)
+            printer.info('native function end')
+        except Exception as e:
+            printer.error(f'native function raised an exception: {e}')
+        finally:
+            return False
 
 
 class Subprocess(Callback):
@@ -29,24 +50,24 @@ class Subprocess(Callback):
     def arguments(self) -> Callable[[str, str], str]:
         return self._arguments
 
-    def __call__(self, *args: str, **kwargs: str) -> bool:
-        self.printer.info(f'callback function args: {args}')
-        self.printer.info(f'callback function kwargs: {kwargs}')
+    def __call__(self, printer: repli.Printer, *args: str, **kwargs: str) -> bool:
+        printer.info(f'callback function args: {args}')
+        printer.info(f'callback function kwargs: {kwargs}')
         arguments = self.arguments(*args, **kwargs)
-        self.printer.info(f'running subprocess command: \'{arguments}\'')
+        printer.info(f'running subprocess command: \'{arguments}\'')
         try:
-            self.printer.info('subprocess begin')
+            printer.info('subprocess begin')
             returncode = subprocess.call(
                 args=shlex.split(arguments),
                 text=True,
                 encoding='utf-8',
             )
-            self.printer.info('subprocess end')
+            printer.info('subprocess end')
             if returncode != 0:
-                self.printer.error(f'subprocess returned an error code: {returncode}')
+                printer.error(f'subprocess returned an error code: {returncode}')
             else:
-                self.printer.info('subprocess returned successfully')
+                printer.info('subprocess returned successfully')
         except Exception as e:
-            self.printer.error(f'subprocess raised an exception: {e}')
+            printer.error(f'subprocess raised an exception: {e}')
         finally:
             return False

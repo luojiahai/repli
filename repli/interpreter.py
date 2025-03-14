@@ -116,7 +116,7 @@ class Interpreter:
             value: Optional[Union[repli.Command, repli.Page]] = self.current_page.dict.get(args[0])
             if isinstance(value, repli.Command):
                 try:
-                    return value.callback(*args[1:])
+                    return value.callback(printer=self.printer, *args[1:])
                 except Exception as e:
                     self.printer.error(f'{e}')
             if isinstance(value, repli.Page):
