@@ -1,6 +1,6 @@
 # Read–Eval–Print Loop Interpreter (REPLI)
 
-[![repli](https://img.shields.io/badge/🧃-repli-red?style=flat-square)](https://github.com/luojiahai/repli)
+[![repli](https://img.shields.io/badge/🫥-repli-red?style=flat-square)](https://github.com/luojiahai/repli)
 [![build](https://img.shields.io/github/actions/workflow/status/luojiahai/repli/python-publish.yml?style=flat-square&logo=githubactions&logoColor=white)](https://github.com/luojiahai/repli/actions/workflows/python-publish.yml)
 [![license](https://img.shields.io/github/license/luojiahai/repli?style=flat-square&logo=github&logoColor=white)](https://github.com/luojiahai/repli/blob/main/LICENSE)
 [![python](https://img.shields.io/pypi/pyversions/repli?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
