@@ -6,7 +6,7 @@
 [![python](https://img.shields.io/pypi/pyversions/repli?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![pypi](https://img.shields.io/pypi/v/repli?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/repli/)
 
-This is a Python package for building REPL applications.
+This is a Python package for building Read–Eval–Print Loop (REPL) applications.
 
 Features:
 
