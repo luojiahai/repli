@@ -9,16 +9,19 @@ from rich.text import Text
 from typing import Dict, List, Optional, Union
 
 
+DEFAULT_NAME: str = '[🐟] '
 DEFAULT_PROMPT: str = '> '
 
 
 class Interpreter:
     def __init__(
         self,
+        name: str = DEFAULT_NAME,
         prompt: str = DEFAULT_PROMPT,
         page: Optional[Page] = None
     ) -> None:
         self._printer: Printer = Printer()
+        self._name: str = name
         self._prompt: str = prompt
         self._builtins: Dict[str, Command] = {
             'e': self.command_exit('e'),
@@ -30,6 +33,10 @@ class Interpreter:
     @property
     def printer(self) -> Printer:
         return self._printer
+    
+    @property
+    def name(self) -> str:
+        return self._name
 
     @property
     def prompt(self) -> str:
@@ -53,7 +60,8 @@ class Interpreter:
     
     def print_breadcrumbs(self, pages: List[Page], page_index: int) -> None:
         self.printer.print(Rule(style='dim cyan'))
-        breadcrumbs: Text = Text(text='  ')
+        breadcrumbs: Text = Text()
+        breadcrumbs.append(self.name, style='bold')
         for index, page in enumerate(pages):
             if index == page_index:
                 breadcrumbs.append(f'{page.description}', style='bold underline')

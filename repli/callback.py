@@ -13,8 +13,9 @@ class Callback(abc.ABC):
     def printer(self) -> Printer:
         return self._printer
 
-    def __call__(self, printer: Printer, *args: str, **kwargs: str) -> bool:
-        raise NotImplementedError
+    def __call__(self, *args: str, **kwargs: str) -> bool:
+        self.printer.info(f'callback function args: {args}')
+        self.printer.info(f'callback function kwargs: {kwargs}')
 
 
 class NativeFunction(Callback):
@@ -30,8 +31,7 @@ class NativeFunction(Callback):
         return self._callable
 
     def __call__(self, *args: str, **kwargs: str) -> bool:
-        self.printer.info(f'callback function args: {args}')
-        self.printer.info(f'callback function kwargs: {kwargs}')
+        super().__call__(*args, **kwargs)
         try:
             self.printer.info('native function begin')
             self.callable(*args, **kwargs)
@@ -55,8 +55,7 @@ class Subprocess(Callback):
         return self._callable
 
     def __call__(self, *args: str, **kwargs: str) -> bool:
-        self.printer.info(f'callback function args: {args}')
-        self.printer.info(f'callback function kwargs: {kwargs}')
+        super().__call__(*args, **kwargs)
         arguments = self.callable(*args, **kwargs)
         self.printer.info(f'running subprocess command: \'{arguments}\'')
         try:
