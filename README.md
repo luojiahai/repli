@@ -22,6 +22,8 @@ Features:
 
 ## Install
 
+Pip:
+
 ```shell
 pip install repli
 ```
@@ -52,7 +54,6 @@ elements = [
     ),
 ]
 page = Page(name='0', description='home', elements=elements)
-
 interpreter = repli.Interpreter(page=page)
 interpreter.loop()
 ```
