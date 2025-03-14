@@ -112,8 +112,8 @@ class Interpreter:
         if args[0] in self.builtins:
             return self.builtins[args[0]]()
 
-        if args[0] in self.current_page.dict:
-            value: Optional[Union[repli.Command, repli.Page]] = self.current_page.dict.get(args[0])
+        if args[0] in self.current_page.commands:
+            value: Optional[Union[repli.Command, repli.Page]] = self.current_page.commands.get(args[0])
             if isinstance(value, repli.Command):
                 try:
                     return value.callback(printer=self.printer, *args[1:])
@@ -134,7 +134,7 @@ class Interpreter:
 
         while not status:
             self.print_breadcrumbs(pages=self.pages, page_index=self.page_index)
-            self.print_panel(title='commands', commands=self.current_page.dict)
+            self.print_panel(title='commands', commands=self.current_page.commands)
             self.print_panel(title='builtins', commands=self.builtins)
             try:
                 line = input(self.prompt)

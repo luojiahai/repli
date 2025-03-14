@@ -16,21 +16,21 @@ class Callback(abc.ABC):
 class NativeFunction(Callback):
     def __init__(
         self,
-        function: Callable[[str, str], None],
+        callable: Callable[[str, str], None],
     ) -> None:
         super().__init__()
-        self._function: Callable[[str, str], None] = function
+        self._callable: Callable[[str, str], None] = callable
 
     @property
-    def function(self) -> Callable[[str, str], None]:
-        return self._function
+    def callable(self) -> Callable[[str, str], None]:
+        return self._callable
 
     def __call__(self, printer: repli.Printer, *args: str, **kwargs: str) -> bool:
         printer.info(f'callback function args: {args}')
         printer.info(f'callback function kwargs: {kwargs}')
         try:
             printer.info('native function begin')
-            self.function(*args, **kwargs)
+            self.callable(*args, **kwargs)
             printer.info('native function end')
         except Exception as e:
             printer.error(f'native function raised an exception: {e}')
@@ -41,19 +41,19 @@ class NativeFunction(Callback):
 class Subprocess(Callback):
     def __init__(
         self,
-        arguments: Callable[[str, str], str],
+        callable: Callable[[str, str], str],
     ) -> None:
         super().__init__()
-        self._arguments: Callable[[str, str], str] = arguments
+        self._callable: Callable[[str, str], str] = callable
 
     @property
-    def arguments(self) -> Callable[[str, str], str]:
-        return self._arguments
+    def callable(self) -> Callable[[str, str], str]:
+        return self._callable
 
     def __call__(self, printer: repli.Printer, *args: str, **kwargs: str) -> bool:
         printer.info(f'callback function args: {args}')
         printer.info(f'callback function kwargs: {kwargs}')
-        arguments = self.arguments(*args, **kwargs)
+        arguments = self.callable(*args, **kwargs)
         printer.info(f'running subprocess command: \'{arguments}\'')
         try:
             printer.info('subprocess begin')
