@@ -1,5 +1,5 @@
 import abc
-import interpreter
+import repli
 import subprocess
 import shlex
 from typing import Callable
@@ -7,10 +7,10 @@ from typing import Callable
 
 class Callback(abc.ABC):
     def __init__(self) -> None:
-        self._printer = interpreter.Printer()
+        self._printer = repli.Printer()
 
     @property
-    def printer(self) -> interpreter.Printer:
+    def printer(self) -> repli.Printer:
         return self._printer
 
     def __call__(self, *args: str, **kwargs: str) -> bool:
