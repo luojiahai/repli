@@ -5,13 +5,13 @@ from repli.page import Page
 
 page = Page(description='home')
 
-@page.command(type=NativeFunction, name='1', description='command 1')
+@page.command(type=NativeFunction, name='1', description='print hello world')
 def command_1():
-    print('command 1')
+    print('hello world')
 
-@page.command(type=Subprocess, name='2', description='command 2')
+@page.command(type=Subprocess, name='2', description='print something else')
 def command_2():
-    return 'echo command 2'
+    return 'echo something else'
 
 def main():
     interpreter = Interpreter(page=page)

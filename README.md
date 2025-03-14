@@ -19,8 +19,8 @@ Features:
   home
 ────────────────────────────────────────────────────────────────
 ╭─ commands ───────────────────────────────────────────────────╮
-│ 1  page 1                                                    │
-│ 2  page 2                                                    │
+│ 1  print hello world                                         │
+│ 2  do something                                              │
 ╰──────────────────────────────────────────────────────────────╯
 ╭─ builtins ───────────────────────────────────────────────────╮
 │ e  exit                                                      │
@@ -48,13 +48,13 @@ poetry add repli
 ```python
 page = Page(name='0', description='home')
 
-@page.command(type=NativeFunction, name='1', description='command 1')
+@page.command(type=NativeFunction, name='1', description='print hello world')
 def command_1():
-    print('command 1')
+    print('hello world')
 
-@page.command(type=Subprocess, name='2', description='command 2')
+@page.command(type=Subprocess, name='2', description='print something else')
 def command_2():
-    return 'echo command 2'
+    return 'echo something else'
 
 interpreter = Interpreter(page=page)
 interpreter.loop()
