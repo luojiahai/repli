@@ -1,5 +1,7 @@
-import repli
 import readline
+from repli.command import Command
+from repli.page import Page
+from repli.printer import Printer
 from rich.panel import Panel
 from rich.rule import Rule
 from rich.table import Table
@@ -14,19 +16,19 @@ class Interpreter:
     def __init__(
         self,
         prompt: str = DEFAULT_PROMPT,
-        page: Optional[repli.Page] = None
+        page: Optional[Page] = None
     ) -> None:
-        self._printer: repli.Printer = repli.Printer()
+        self._printer: Printer = Printer()
         self._prompt: str = prompt
-        self._builtins: Dict[str, repli.Command] = {
+        self._builtins: Dict[str, Command] = {
             'e': self.command_exit('e'),
             'q': self.command_previous_page('q'),
         }
-        self._pages: List[repli.Page] = [page]
+        self._pages: List[Page] = [page]
         self._page_index: int = 0
 
     @property
-    def printer(self) -> repli.Printer:
+    def printer(self) -> Printer:
         return self._printer
 
     @property
@@ -34,11 +36,11 @@ class Interpreter:
         return self._prompt
 
     @property
-    def builtins(self) -> Dict[str, repli.Command]:
+    def builtins(self) -> Dict[str, Command]:
         return self._builtins
 
     @property
-    def pages(self) -> List[repli.Page]:
+    def pages(self) -> List[Page]:
         return self._pages
 
     @property
@@ -46,10 +48,10 @@ class Interpreter:
         return self._page_index
 
     @property
-    def current_page(self) -> repli.Page:
+    def current_page(self) -> Page:
         return self.pages[self.page_index]
     
-    def print_breadcrumbs(self, pages: List[repli.Page], page_index: int) -> None:
+    def print_breadcrumbs(self, pages: List[Page], page_index: int) -> None:
         self.printer.print(Rule(style='dim cyan'))
         breadcrumbs: Text = Text(text='  ')
         for index, page in enumerate(pages):
@@ -62,7 +64,7 @@ class Interpreter:
         self.printer.print(breadcrumbs, style='cyan')
         self.printer.print(Rule(style='dim cyan'))
 
-    def print_panel(self, title: str, commands: Dict[str, Union[repli.Command, repli.Page]]) -> None:
+    def print_panel(self, title: str, commands: Dict[str, Union[Command, Page]]) -> None:
         table: Table = Table(
             highlight=False,
             show_header=False,
@@ -89,13 +91,13 @@ class Interpreter:
 
         self.printer.print(panel)
 
-    def command_exit(self, name: str) -> repli.Command:
+    def command_exit(self, name: str) -> Command:
         def exit() -> bool:
             self.printer.info('exited')
             return True
-        return repli.Command(name=name, description='exit', callback=exit)
+        return Command(name=name, description='exit', callback=exit)
 
-    def command_previous_page(self, name: str) -> repli.Command:
+    def command_previous_page(self, name: str) -> Command:
         def previous_page() -> bool:
             if self.page_index == 0:
                 self.printer.error('no previous page')
@@ -103,23 +105,23 @@ class Interpreter:
             self._pages.pop()
             self._page_index -= 1
             return False
-        return repli.Command(name=name, description='previous page', callback=previous_page)
+        return Command(name=name, description='previous page', callback=previous_page)
 
     def execute(self, args: List[str]) -> bool:
         if not args:
             return False
 
         if args[0] in self.builtins:
-            return self.builtins[args[0]]()
+            return self.builtins[args[0]].callback()
 
         if args[0] in self.current_page.commands:
-            value: Optional[Union[repli.Command, repli.Page]] = self.current_page.commands.get(args[0])
-            if isinstance(value, repli.Command):
+            value: Optional[Union[Command, Page]] = self.current_page.commands.get(args[0])
+            if isinstance(value, Command):
                 try:
-                    return value.callback(printer=self.printer, *args[1:])
+                    return value.callback(*args[1:])
                 except Exception as e:
                     self.printer.error(f'{e}')
-            if isinstance(value, repli.Page):
+            if isinstance(value, Page):
                 self._pages.append(value)
                 self._page_index += 1
         else:

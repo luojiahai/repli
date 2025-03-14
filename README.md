@@ -46,18 +46,14 @@ poetry add repli
 ## Usage
 
 ```python
-from repli import Interpreter, Page
-from repli.callback import NativeFunction, Subprocess
-
-
 page = Page(name='0', description='home')
 
-@page.command(name='1', description='command 1', type=NativeFunction)
-def command_1(*args) -> None:
+@page.command(type=NativeFunction, name='1', description='command 1')
+def command_1():
     print('command 1')
 
-@page.command(name='2', description='command 2', type=Subprocess)
-def command_2(*args) -> str:
+@page.command(type=Subprocess, name='2', description='command 2')
+def command_2():
     return 'echo command 2'
 
 interpreter = Interpreter(page=page)
