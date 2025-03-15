@@ -16,6 +16,10 @@ def command_2():
 def main():
     interpreter = Interpreter(page=page)
     interpreter.loop()
-
-if __name__ == '__main__':
-    main()
+    # import sys
+    # from time import sleep
+    # sys.stdout.write('hello world\n')
+    # for count in range(100):
+    #     sleep(0.1)
+    #     sys.stdout.write(f'\r{count}')
+    #     sys.stdout.flush()

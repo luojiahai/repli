@@ -1,5 +1,4 @@
 from rich.console import Console
-from rich.markup import escape
 
 
 PREFIX: str = '[repli]'
@@ -16,7 +15,7 @@ class Printer(Console):
         return cls._instance
 
     def info(self, message: str) -> None:
-        self.print(f'{escape(PREFIX)} {escape(INFO_PREFIX)} {escape(message)}', style='magenta')
+        self.print(f'{PREFIX} {INFO_PREFIX} {message}', style='magenta', markup=False)
 
     def error(self, message: str) -> None:
-        self.print(f'{escape(PREFIX)} {escape(ERROR_PREFIX)} {escape(message)}', style='yellow')
+        self.print(f'{PREFIX} {ERROR_PREFIX} {message}', style='yellow', markup=False)
