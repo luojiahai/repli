@@ -31,7 +31,7 @@ class Page:
 
     def command(self, type: Type, name: str, description: str) -> Callable:
         if name in self._commands:
-            raise ValueError(f'command with name \'{name}\' already exists')
+            raise ValueError(f'page or command with name \'{name}\' already exists in current page')
         def decorator(callable: Callable[[str, str], Callback]) -> None:
             if type == NativeFunction:
                 callback = NativeFunction(callable=callable)
@@ -46,4 +46,6 @@ class Page:
     def add_page(self, page: Self, name: str, description: str) -> None:
         page.name = name
         page.description = description
+        if page.name in self._commands:
+            raise ValueError(f'page or command with name \'{name}\' already exists in current page')
         self._commands[page.name] = page

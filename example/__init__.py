@@ -9,7 +9,7 @@ page = Page(description='home')
 def command_print_hello_world():
     print('hello world')
 
-@page.command(type=Subprocess, name='1', description='do something')
+@page.command(type=Subprocess, name='2', description='do something')
 def command_do_something():
     return 'echo something else'
 
