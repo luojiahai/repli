@@ -1,4 +1,5 @@
 import readline
+from repli.callback import Callback
 from repli.command import Command
 from repli.page import Page
 from repli.printer import Printer
@@ -121,20 +122,26 @@ class Interpreter:
         if not args:
             return False
 
+        callback: Callback = None
         if args[0] in self.builtins:
-            return self.builtins[args[0]].callback()
-
-        if args[0] in self.current_page.commands:
-            value: Optional[Union[Command, Page]] = self.current_page.commands.get(args[0])
-            if isinstance(value, Command):
-                try:
-                    return value.callback(*args[1:])
-                except Exception as e:
-                    self.printer.error(f'{e}')
-            if isinstance(value, Page):
-                self._pages.append(value)
+            callback = self.builtins[args[0]].callback
+        elif args[0] in self.current_page.commands:
+            command: Optional[Union[Command, Page]] = self.current_page.commands.get(args[0])
+            if isinstance(command, Command):
+                callback = command.callback
+            if isinstance(command, Page):
+                self._pages.append(command)
         else:
             self.printer.error(f'command not found: {args[0]}')
+
+        try:
+            result = callback(*args[1:])
+            return result
+        except Exception as e:
+            self.printer.error(f'{e}')
+        finally:
+            if not result:
+                self.printer.input(prompt='press enter to continue', password=True, markup=False)
 
         return False
 
@@ -150,8 +157,6 @@ class Interpreter:
                 line = self.printer.input(prompt=f'{self.prompt} ', markup=False)
                 args = line.split()
                 status = self.execute(args)
-                if args and not status:
-                    self.printer.input(prompt='press enter to continue', password=True, markup=False)
             except EOFError:
                 status = True
                 self.printer.print()
