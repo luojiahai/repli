@@ -125,14 +125,14 @@ class Interpreter:
                 command: Optional[Union[Command, Page]] = self.current_page.commands.get(args[0])
                 if isinstance(command, Command):
                     result = command.callback(*args[1:])
-                    self.printer.input(prompt='press enter to continue', password=True, markup=False)
+                    self.printer.input(prompt='press enter to continue')
                 if isinstance(command, Page):
                     self._pages.append(command)
             else:
                 raise Exception(f'command not found: {args[0]}')
         except Exception as e:
             self.printer.error(f'{e}')
-            self.printer.input(prompt='press enter to continue', password=True, markup=False)
+            self.printer.input(prompt='press enter to continue')
         return result
 
     def loop(self) -> None:
