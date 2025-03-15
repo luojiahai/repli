@@ -134,16 +134,15 @@ class Interpreter:
         else:
             self.printer.error(f'command not found: {args[0]}')
 
+        result: bool = False
         try:
             result = callback(*args[1:])
-            return result
         except Exception as e:
             self.printer.error(f'{e}')
         finally:
             if not result:
                 self.printer.input(prompt='press enter to continue', password=True, markup=False)
-
-        return False
+        return result
 
     def loop(self) -> None:
         line: Optional[str] = None
