@@ -20,7 +20,7 @@ def test_callback_native_function_call(mocker: MockerFixture):
     callback_call_mock = mocker.patch("repli.callback.Callback.__call__")
     console_print_mock = mocker.patch("repli.console.Console.print")
     console_error_mock = mocker.patch("repli.console.Console.error")
-    rich_rule_mock = mocker.patch("rich.rule.Rule")
+    rich_rule_mock = mocker.patch("repli.callback.Rule")
     callable_mock = mocker.MagicMock()
 
     native_function = NativeFunction(callable=callable_mock)
@@ -39,7 +39,7 @@ def test_callback_native_function_call_exception(mocker: MockerFixture):
     callback_call_mock = mocker.patch("repli.callback.Callback.__call__")
     console_print_mock = mocker.patch("repli.console.Console.print")
     console_error_mock = mocker.patch("repli.console.Console.error")
-    rich_rule_mock = mocker.patch("rich.rule.Rule")
+    rich_rule_mock = mocker.patch("repli.callback.Rule")
     callable_mock = mocker.MagicMock()
     callable_mock.side_effect = Exception('test')
 
@@ -59,7 +59,7 @@ def test_callback_subprocess_call(mocker: MockerFixture):
     console_info_mock = mocker.patch("repli.console.Console.info")
     console_error_mock = mocker.patch("repli.console.Console.error")
     console_print_mock = mocker.patch("repli.console.Console.print")
-    rich_rule_mock = mocker.patch("rich.rule.Rule")
+    rich_rule_mock = mocker.patch("repli.callback.Rule")
     callable_mock = mocker.MagicMock()
     callable_mock.return_value = 'test'
     subprocess_call_mock = mocker.patch("subprocess.call")
@@ -89,7 +89,7 @@ def test_callback_subprocess_call_exception(mocker: MockerFixture):
     console_info_mock = mocker.patch("repli.console.Console.info")
     console_error_mock = mocker.patch("repli.console.Console.error")
     console_print_mock = mocker.patch("repli.console.Console.print")
-    rich_rule_mock = mocker.patch("rich.rule.Rule")
+    rich_rule_mock = mocker.patch("repli.callback.Rule")
     callable_mock = mocker.MagicMock()
     callable_mock.return_value = 'test'
     subprocess_call_mock = mocker.patch("subprocess.call")
