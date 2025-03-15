@@ -28,10 +28,9 @@ class Interpreter:
         self._prompt: str = prompt
         self._builtins: Dict[str, Command] = {
             'e': self.command_exit('e'),
-            'q': self.command_previous_page('q'),
+            'q': self.command_quit('q'),
         }
         self._pages: List[Page] = [page]
-        self._page_index: int = 0
 
     @property
     def printer(self) -> Printer:
@@ -54,24 +53,15 @@ class Interpreter:
         return self._pages
 
     @property
-    def page_index(self) -> int:
-        return self._page_index
-
-    @property
     def current_page(self) -> Page:
-        return self.pages[self.page_index]
-
-    def print_prompt(self) -> None:
-        prompt: Text = Text()
-        prompt.append(f'{self.prompt} ')
-        self.printer.print(prompt, end='')
+        return self.pages[-1]
 
     def print_interface(self) -> None:
         # header
         header: Text = Text(style='cyan')
         header.append(f'{self.name} ', style='bold')
         for index, page in enumerate(self.pages):
-            if index == self.page_index:
+            if index == len(self.pages) - 1:
                 header.append(f'{page.description}', style='bold underline')
             else:
                 header.append(f'{page.description}')
@@ -85,8 +75,8 @@ class Interpreter:
             box=None,
             pad_edge=False,
         )
-        table.add_column('name', style='bold cyan', no_wrap=True)
-        table.add_column('description', justify='left', no_wrap=False, ratio=10)
+        table.add_column('name', style='bold cyan')
+        table.add_column('description', justify='left', ratio=1)
         for _, value in self.current_page.commands.items():
             table.add_row(value.name, value.description)
 
@@ -99,18 +89,16 @@ class Interpreter:
                 footer.append('  |  ', style='dim')
 
         # interface
-        group: Group = Group(
-            header,
-            Rule(style='dim'),
-            Padding(table, (1, 0)),
-            Rule(style='dim'),
-            footer,
-        )
-        interface: Panel = Panel(
-            renderable=group,
+        interface = Table(
             box=box.SQUARE,
-            border_style='dim cyan',
+            expand=True,
+            show_footer=True,
+            header_style=None,
+            footer_style=None,
+            border_style='cyan',
         )
+        interface.add_column(header=header, footer=footer)
+        interface.add_row(Padding(renderable=table, pad=(1, 0)))
 
         self.printer.print(interface)
 
@@ -118,17 +106,16 @@ class Interpreter:
         def exit() -> bool:
             self.printer.info('exited')
             return True
-        return Command(name=name, description='exit', callback=exit)
+        return Command(name=name, description='exit application', callback=exit)
 
-    def command_previous_page(self, name: str) -> Command:
-        def previous_page() -> bool:
-            if self.page_index == 0:
-                self.printer.error('no previous page')
+    def command_quit(self, name: str) -> Command:
+        def quit() -> bool:
+            if len(self.pages) == 1:
+                self.printer.error('current page is root page')
                 return False
             self._pages.pop()
-            self._page_index -= 1
             return False
-        return Command(name=name, description='previous page', callback=previous_page)
+        return Command(name=name, description='quit current page', callback=quit)
 
     def execute(self, args: List[str]) -> bool:
         if not args:
@@ -146,7 +133,6 @@ class Interpreter:
                     self.printer.error(f'{e}')
             if isinstance(value, Page):
                 self._pages.append(value)
-                self._page_index += 1
         else:
             self.printer.error(f'command not found: {args[0]}')
 
@@ -158,17 +144,17 @@ class Interpreter:
         status: bool = False
 
         while not status:
+            self.printer.clear()
             self.print_interface()
             try:
-                self.print_prompt()
-                line = input()
+                line = self.printer.input(prompt=f'{self.prompt} ', markup=False)
                 args = line.split()
                 status = self.execute(args)
+                if args and not status:
+                    self.printer.input(prompt='press enter to continue', password=True, markup=False)
             except EOFError:
                 status = True
                 self.printer.print()
                 self.printer.info('exited with EOF')
             except KeyboardInterrupt:
                 status = False
-                self.printer.print()
-                self.printer.info('keyboard interrupted')
