@@ -1,13 +1,9 @@
 import readline
-from repli.callback import Callback
 from repli.command import Command
 from repli.page import Page
 from repli.printer import Printer
 from rich import box
-from rich.console import Group
 from rich.padding import Padding
-from rich.panel import Panel
-from rich.rule import Rule
 from rich.table import Table
 from rich.text import Text
 from typing import Dict, List, Optional, Union
