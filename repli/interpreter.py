@@ -4,6 +4,7 @@ from repli.page import Page
 from repli.printer import Printer
 from rich import box
 from rich.console import Group
+from rich.padding import Padding
 from rich.panel import Panel
 from rich.rule import Rule
 from rich.table import Table
@@ -101,10 +102,7 @@ class Interpreter:
         group: Group = Group(
             header,
             Rule(style='dim'),
-            Panel(
-                renderable=table,
-                box=box.SIMPLE,
-            ),
+            Padding(table, (1, 0)),
             Rule(style='dim'),
             footer,
         )

@@ -19,8 +19,8 @@ Features:
 │ home                                                         │
 │ ──────────────────────────────────────────────────────────── │
 │                                                              │
-│   1  print hello world                                       │
-│   2  do something                                            │
+│ 1  print hello world                                         │
+│ 2  do something                                              │
 │                                                              │
 │ ──────────────────────────────────────────────────────────── │
 │ e  exit  |  q  previous page                                 │
