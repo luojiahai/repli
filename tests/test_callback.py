@@ -2,7 +2,7 @@ from pytest_mock import MockerFixture
 from repli.callback import Callback, NativeFunction, Subprocess
 
 
-def test_mock_callback_call(mocker: MockerFixture):
+def test_callback_call(mocker: MockerFixture):
     mock_console_info = mocker.patch("repli.console.Console.info")
     mock_console_error = mocker.patch("repli.console.Console.error")
 
@@ -15,6 +15,11 @@ def test_mock_callback_call(mocker: MockerFixture):
     ])
     mock_console_error.assert_not_called()
     assert result == False
+
+def test_callback_native_function_init(mocker: MockerFixture):
+    mock_callable = mocker.MagicMock()
+    native_function = NativeFunction(callable=mock_callable)
+    assert native_function.callable == mock_callable
 
 def test_callback_native_function_call(mocker: MockerFixture):
     mock_callback_call = mocker.patch("repli.callback.Callback.__call__")
@@ -53,6 +58,11 @@ def test_callback_native_function_call_exception(mocker: MockerFixture):
     mock_callable.assert_called_once_with('arg1', 'arg2', kwarg1='kwarg1', kwarg2='kwarg2')
     mock_console_error.assert_called_once_with('native function raised an exception: test')
     assert result == False
+
+def test_callback_subprocess_init(mocker: MockerFixture):
+    mock_callable = mocker.MagicMock()
+    subprocess = Subprocess(callable=mock_callable)
+    assert subprocess.callable == mock_callable
 
 def test_callback_subprocess_call(mocker: MockerFixture):
     mock_callback_call = mocker.patch("repli.callback.Callback.__call__")

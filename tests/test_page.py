@@ -1,12 +1,12 @@
-from repli.page import Page
 from pytest_mock import MockerFixture
+from repli.page import Page
 from repli.callback import NativeFunction
 from repli.command import Command
 from repli.callback import Subprocess
 from repli.command import Command
 
 
-def test_page(mocker: MockerFixture):
+def test_page_init(mocker: MockerFixture):
     page = Page(name='name', description='description')
     assert page.name == 'name'
     assert page.description == 'description'
@@ -58,9 +58,8 @@ def test_page_command_subprocess(mocker: MockerFixture):
 
 def test_page_command_invalid_type(mocker: MockerFixture):
     page = Page()
-    mock_callable = mocker.MagicMock()
     try:
         decorator = page.command(str, 'test_command', 'test description')
-        decorator(mock_callable)
+        decorator(mocker.MagicMock())
     except ValueError as e:
         assert str(e) == 'invalid callback type'
