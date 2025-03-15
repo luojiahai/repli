@@ -15,18 +15,17 @@ Features:
 - Pagination
 
 ```
-────────────────────────────────────────────────────────────────
-  home
-────────────────────────────────────────────────────────────────
-╭─ commands ───────────────────────────────────────────────────╮
-│ 1  print hello world                                         │
-│ 2  do something                                              │
+╭──────────────────────────────────────────────────────────────╮
+│ home                                                         │
+│ ──────────────────────────────────────────────────────────── │
+│                                                              │
+│   1  print hello world                                       │
+│   2  do something                                            │
+│                                                              │
+│ ──────────────────────────────────────────────────────────── │
+│ e  exit  |  q  previous page                                 │
 ╰──────────────────────────────────────────────────────────────╯
-╭─ builtins ───────────────────────────────────────────────────╮
-│ e  exit                                                      │
-│ q  previous page                                             │
-╰──────────────────────────────────────────────────────────────╯
-> _
+> 
 ```
 
 ## Install
@@ -46,13 +45,13 @@ poetry add repli
 ## Usage
 
 ```python
-page = Page(name='0', description='home')
+page = Page(description='home')
 
 @page.command(type=NativeFunction, name='1', description='print hello world')
 def command_1():
     print('hello world')
 
-@page.command(type=Subprocess, name='2', description='print something else')
+@page.command(type=Subprocess, name='2', description='do something')
 def command_2():
     return 'echo something else'
 
