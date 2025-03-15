@@ -133,7 +133,7 @@ class Interpreter:
                 if isinstance(command, Page):
                     self._pages.append(command)
             else:
-                self.printer.error(f'command not found: {args[0]}')
+                raise Exception(f'command not found: {args[0]}')
         except Exception as e:
             self.printer.error(f'{e}')
             self.printer.input(prompt='press enter to continue', password=True, markup=False)
