@@ -1,7 +1,7 @@
 import readline
+from repli import console
 from repli.command import Command
 from repli.page import Page
-from repli.printer import Printer
 from rich import box
 from rich.padding import Padding
 from rich.table import Table
@@ -20,7 +20,6 @@ class Interpreter:
         prompt: str = DEFAULT_PROMPT,
         page: Optional[Page] = None
     ) -> None:
-        self._printer: Printer = Printer()
         self._name: str = name
         self._prompt: str = prompt
         self._builtins: Dict[str, Command] = {
@@ -28,10 +27,6 @@ class Interpreter:
             'q': self.command_quit('q'),
         }
         self._pages: List[Page] = [page]
-
-    @property
-    def printer(self) -> Printer:
-        return self._printer
 
     @property
     def name(self) -> str:
@@ -97,11 +92,11 @@ class Interpreter:
         interface.add_column(header=header, footer=footer)
         interface.add_row(Padding(renderable=table, pad=(1, 0)))
 
-        self.printer.print(interface)
+        console.print(interface)
 
     def command_exit(self, name: str) -> Command:
         def exit() -> bool:
-            self.printer.info('exited')
+            console.info('exited')
             return True
         return Command(name=name, description='exit application', callback=exit)
 
@@ -125,14 +120,14 @@ class Interpreter:
                 command: Optional[Union[Command, Page]] = self.current_page.commands.get(args[0])
                 if isinstance(command, Command):
                     result = command.callback(*args[1:])
-                    self.printer.input(prompt='press enter to continue')
+                    console.input(prompt='press enter to continue')
                 if isinstance(command, Page):
                     self._pages.append(command)
             else:
                 raise Exception(f'command not found: {args[0]}')
         except Exception as e:
-            self.printer.error(f'{e}')
-            self.printer.input(prompt='press enter to continue')
+            console.error(f'{e}')
+            console.input(prompt='press enter to continue')
         return result
 
     def loop(self) -> None:
@@ -141,15 +136,15 @@ class Interpreter:
         status: bool = False
 
         while not status:
-            self.printer.clear()
+            console.clear()
             self.print_interface()
             try:
-                line = self.printer.input(prompt=f'{self.prompt} ', markup=False)
+                line = console.input(prompt=f'{self.prompt} ', markup=False)
                 args = line.split()
                 status = self.execute(args)
             except EOFError:
                 status = True
-                self.printer.print()
-                self.printer.info('exited with EOF')
+                console.print()
+                console.info('exited with EOF')
             except KeyboardInterrupt:
                 status = False

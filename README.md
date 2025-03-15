@@ -30,16 +30,8 @@ Features:
 
 ## Install
 
-Pip:
-
 ```shell
 pip install repli
-```
-
-Poetry:
-
-```shell
-poetry add repli
 ```
 
 ## Usage
@@ -60,3 +52,22 @@ interpreter.loop()
 ```
 
 See [example](./example).
+
+## Development
+
+Requirements:
+
+- [Poetry](https://python-poetry.org/)
+
+Setup environment:
+
+```shell
+poetry shell
+poetry install
+```
+
+Test:
+
+```shell
+poetry run pytest
+```
