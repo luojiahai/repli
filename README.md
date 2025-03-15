@@ -48,11 +48,11 @@ poetry add repli
 page = Page(description='home')
 
 @page.command(type=NativeFunction, name='1', description='print hello world')
-def command_1():
+def command_print_hello_world():
     print('hello world')
 
 @page.command(type=Subprocess, name='2', description='do something')
-def command_2():
+def command_do_something():
     return 'echo something else'
 
 interpreter = Interpreter(page=page)
