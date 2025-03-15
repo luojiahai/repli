@@ -112,8 +112,7 @@ class Interpreter:
     def command_quit(self, name: str) -> Command:
         def quit() -> bool:
             if len(self.pages) == 1:
-                self.printer.error('current page is root page')
-                return False
+                raise Exception('current page is root page')
             self._pages.pop()
             return False
         return Command(name=name, description='quit current page', callback=quit)
@@ -122,26 +121,22 @@ class Interpreter:
         if not args:
             return False
 
-        callback: Callback = None
-        if args[0] in self.builtins:
-            callback = self.builtins[args[0]].callback
-        elif args[0] in self.current_page.commands:
-            command: Optional[Union[Command, Page]] = self.current_page.commands.get(args[0])
-            if isinstance(command, Command):
-                callback = command.callback
-            if isinstance(command, Page):
-                self._pages.append(command)
-        else:
-            self.printer.error(f'command not found: {args[0]}')
-
-        result: bool = False
+        result: Optional[bool] = None
         try:
-            result = callback(*args[1:])
+            if args[0] in self.builtins:
+                result = self.builtins[args[0]].callback()
+            elif args[0] in self.current_page.commands:
+                command: Optional[Union[Command, Page]] = self.current_page.commands.get(args[0])
+                if isinstance(command, Command):
+                    result = command.callback(*args[1:])
+                    self.printer.input(prompt='press enter to continue', password=True, markup=False)
+                if isinstance(command, Page):
+                    self._pages.append(command)
+            else:
+                self.printer.error(f'command not found: {args[0]}')
         except Exception as e:
             self.printer.error(f'{e}')
-        finally:
-            if not result:
-                self.printer.input(prompt='press enter to continue', password=True, markup=False)
+            self.printer.input(prompt='press enter to continue', password=True, markup=False)
         return result
 
     def loop(self) -> None:
