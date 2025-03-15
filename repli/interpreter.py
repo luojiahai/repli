@@ -11,8 +11,8 @@ from rich.text import Text
 from typing import Dict, List, Optional, Union
 
 
-DEFAULT_NAME: str = '[🐟] '
-DEFAULT_PROMPT: str = '> '
+DEFAULT_NAME: str = '[🐟]'
+DEFAULT_PROMPT: str = '>'
 
 
 class Interpreter:
@@ -35,7 +35,7 @@ class Interpreter:
     @property
     def printer(self) -> Printer:
         return self._printer
-    
+
     @property
     def name(self) -> str:
         return self._name
@@ -59,11 +59,16 @@ class Interpreter:
     @property
     def current_page(self) -> Page:
         return self.pages[self.page_index]
-    
+
+    def print_prompt(self) -> None:
+        prompt: Text = Text()
+        prompt.append(f'{self.prompt} ')
+        self.printer.print(prompt, end='')
+
     def print_interface(self) -> None:
         # header
         header: Text = Text(style='cyan')
-        header.append(self.name, style='bold')
+        header.append(f'{self.name} ', style='bold')
         for index, page in enumerate(self.pages):
             if index == self.page_index:
                 header.append(f'{page.description}', style='bold underline')
@@ -74,16 +79,10 @@ class Interpreter:
 
         # panel
         table: Table = Table(
-            highlight=False,
             show_header=False,
             expand=True,
             box=None,
-            show_lines=False,
-            leading=0,
-            border_style=None,
-            row_styles=None,
             pad_edge=False,
-            # padding=(0, 1),
         )
         table.add_column('name', style='bold cyan', no_wrap=True)
         table.add_column('description', justify='left', no_wrap=False, ratio=10)
@@ -163,7 +162,8 @@ class Interpreter:
         while not status:
             self.print_interface()
             try:
-                line = input(self.prompt)
+                self.print_prompt()
+                line = input()
                 args = line.split()
                 status = self.execute(args)
             except EOFError:
