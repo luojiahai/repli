@@ -30,6 +30,8 @@ class Page:
         return self._commands
 
     def command(self, type: Type, name: str, description: str) -> Callable:
+        if name in self._commands:
+            raise ValueError(f'command with name \'{name}\' already exists')
         def decorator(callable: Callable[[str, str], Callback]) -> None:
             if type == NativeFunction:
                 callback = NativeFunction(callable=callable)
