@@ -110,7 +110,7 @@ class Interpreter:
         )
         interface: Panel = Panel(
             renderable=group,
-            box=box.ROUNDED,
+            box=box.SQUARE,
             border_style='dim cyan',
         )
 
