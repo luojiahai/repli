@@ -161,7 +161,7 @@ class Interpreter:
                 console.info("exited with EOF")
             except KeyboardInterrupt:
                 status = False
-            finally:
-                # break loop if testing
-                if is_test:
-                    break
+
+            # break loop if testing
+            if is_test:
+                break
