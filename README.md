@@ -22,6 +22,7 @@ Features:
 │                                                              │
 │ 1  print hello world                                         │
 │ 2  do something                                              │
+│ 3  nested page                                               │
 │                                                              │
 ├──────────────────────────────────────────────────────────────┤
 │ e  exit application  |  q  quit current page                 │
