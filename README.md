@@ -83,3 +83,9 @@ Test:
 ```shell
 poetry run coverage run -m pytest
 ```
+
+Export requirements.txt:
+
+```shell
+poetry export --without-hashes --format=requirements.txt > requirements.txt
+```
