@@ -16,6 +16,10 @@ def command_do_something():
     return "echo something else"
 
 
+nested_page_factory = PageFactory()
+page_factory.add_page(page=nested_page_factory.get(name="3", description="nested page"))
+
+
 def main():
     page = page_factory.get(name="example", description="example page")
     interpreter = Interpreter(page=page)

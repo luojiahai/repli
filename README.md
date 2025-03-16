@@ -38,21 +38,25 @@ pip install repli
 ## Usage
 
 ```python
-page = Page(description='home')
+page_factory = PageFactory()
 
-@page.command(type=NativeFunction, name='1', description='print hello world')
+@page_factory.command(type=NativeFunction, name="1", description="print hello world")
 def command_print_hello_world():
-    print('hello world')
+    print("hello world")
 
-@page.command(type=Subprocess, name='2', description='do something')
+@page_factory.command(type=Subprocess, name="2", description="do something")
 def command_do_something():
-    return 'echo something else'
+    return "echo something else"
 
+nested_page_factory = PageFactory()
+page_factory.add_page(page=nested_page_factory.get(name="3", description="nested page"))
+
+page = page_factory.get(name="example", description="example page")
 interpreter = Interpreter(page=page)
 interpreter.loop()
 ```
 
-See [example](./example).
+See the example [source](./example).
 
 ## Development
 
@@ -65,6 +69,12 @@ Setup environment:
 ```shell
 poetry shell
 poetry install
+```
+
+Run example application:
+
+```shell
+poetry run example
 ```
 
 Format:
@@ -82,7 +92,14 @@ poetry run flake8
 Test:
 
 ```shell
+poetry run pytest
+```
+
+Coverage:
+
+```shell
 poetry run coverage run -m pytest
+poetry run coverage report -m
 ```
 
 Export requirements.txt:
