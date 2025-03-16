@@ -165,7 +165,9 @@ def test_callback_subprocess_call_exception(mocker: MockerFixture):
     mock_console_print = mocker.patch("repli.console.Console.print")
     mock_rich_rule = mocker.patch("repli.callback.Rule")
     mock_callable = mocker.MagicMock(return_value="test")
-    mock_subprocess_call = mocker.patch("subprocess.call", side_effect=Exception("test"))
+    mock_subprocess_call = mocker.patch(
+        "subprocess.call", side_effect=Exception("test")
+    )
     mock_shlex_split = mocker.patch("shlex.split", return_value=["test"])
 
     subprocess = Subprocess(callable=mock_callable)

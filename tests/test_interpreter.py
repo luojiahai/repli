@@ -1,6 +1,6 @@
 from pytest_mock import MockerFixture
 from repli.command import Command, Page
-from repli.interpreter import Interpreter
+from repli.interpreter import Interpreter, NoArgumentsError
 from rich import box
 
 
@@ -182,3 +182,148 @@ def test_interpreter_render(mocker: MockerFixture):
     mock_interpreter_header.assert_called_once()
     mock_interpreter_panel.assert_called_once()
     mock_interpreter_footer.assert_called_once()
+
+
+def test_interpreter_execute_no_args(mocker: MockerFixture):
+    interpreter = Interpreter()
+
+    try:
+        interpreter.execute(args=[])
+    except NoArgumentsError as e:
+        assert str(e) == "no arguments provided"
+
+
+def test_interpreter_execute_builtin_command(mocker: MockerFixture):
+    mock_callback = mocker.MagicMock(return_value=False)
+
+    interpreter = Interpreter()
+    builtin_command = Command(
+        name="test", description="description", callback=mock_callback
+    )
+    mocker.patch.object(interpreter, "_builtins", {"test": builtin_command})
+    result = interpreter.execute(args=["test"])
+
+    mock_callback.assert_called_once_with()
+    assert result == False
+
+
+def test_interpreter_execute_command(mocker: MockerFixture):
+    mock_callback = mocker.MagicMock(return_value=False)
+    mock_console_input = mocker.patch("repli.console.Console.input")
+
+    command = Command(name="test", description="description", callback=mock_callback)
+    page = Page(
+        name="page", description="description", commands={command.name: command}
+    )
+    interpreter = Interpreter(page=page)
+    result = interpreter.execute(args=["test", "arg1", "arg2"])
+
+    mock_callback.assert_called_once_with("arg1", "arg2")
+    mock_console_input.assert_called_once_with(prompt="press enter to continue")
+    assert result == False
+
+
+def test_interpreter_execute_page(mocker: MockerFixture):
+    nested_page = Page(name="test", description="description", commands={})
+    page = Page(
+        name="page", description="description", commands={nested_page.name: nested_page}
+    )
+    interpreter = Interpreter(page=page)
+    result = interpreter.execute(args=["test"])
+
+    assert page in interpreter.pages
+    assert result == False
+
+
+def test_interpreter_execute_command_not_found(mocker: MockerFixture):
+    mock_console_error = mocker.patch("repli.console.Console.error")
+    mock_console_input = mocker.patch("repli.console.Console.input")
+
+    page = Page(name="page", description="description", commands={})
+    interpreter = Interpreter(page=page)
+    interpreter.execute(args=["test"])
+
+    mock_console_error.assert_called_once_with("command not found: test")
+    mock_console_input.assert_called_once_with(prompt="press enter to continue")
+
+
+def test_interpreter_loop(mocker: MockerFixture):
+    mock_console_clear = mocker.patch("repli.console.Console.clear")
+    mock_interpreter_render = mocker.patch("repli.interpreter.Interpreter.render")
+    mock_console_input = mocker.patch(
+        "repli.console.Console.input", return_value="test arg1 arg2"
+    )
+    mock_interpreter_execute = mocker.patch("repli.interpreter.Interpreter.execute")
+
+    interpreter = Interpreter()
+    interpreter.loop(is_test=True)
+
+    mock_console_clear.assert_called_once()
+    mock_interpreter_render.assert_called_once()
+    mock_console_input.assert_called_once_with(
+        prompt=f"{interpreter.prompt} ", markup=False
+    )
+    mock_interpreter_execute.assert_called_once_with(["test", "arg1", "arg2"])
+
+
+def test_interpreter_loop_no_args(mocker: MockerFixture):
+    mock_console_clear = mocker.patch("repli.console.Console.clear")
+    mock_interpreter_render = mocker.patch("repli.interpreter.Interpreter.render")
+    mock_console_input = mocker.patch(
+        "repli.console.Console.input", return_value="test arg1 arg2"
+    )
+    mock_interpreter_execute = mocker.patch(
+        "repli.interpreter.Interpreter.execute", side_effect=NoArgumentsError
+    )
+
+    interpreter = Interpreter()
+    interpreter.loop(is_test=True)
+
+    mock_console_clear.assert_called_once()
+    mock_interpreter_render.assert_called_once()
+    mock_console_input.assert_called_once_with(
+        prompt=f"{interpreter.prompt} ", markup=False
+    )
+    mock_interpreter_execute.assert_called_once_with(["test", "arg1", "arg2"])
+
+
+def test_interpreter_loop_eof(mocker: MockerFixture):
+    mock_console_clear = mocker.patch("repli.console.Console.clear")
+    mock_interpreter_render = mocker.patch("repli.interpreter.Interpreter.render")
+    mock_console_input = mocker.patch(
+        "repli.console.Console.input", side_effect=EOFError
+    )
+    mock_interpreter_execute = mocker.patch("repli.interpreter.Interpreter.execute")
+    mock_console_print = mocker.patch("repli.console.Console.print")
+    mock_console_info = mocker.patch("repli.console.Console.info")
+
+    interpreter = Interpreter()
+    interpreter.loop(is_test=True)
+
+    mock_console_clear.assert_called_once()
+    mock_interpreter_render.assert_called_once()
+    mock_console_input.assert_called_once_with(
+        prompt=f"{interpreter.prompt} ", markup=False
+    )
+    mock_interpreter_execute.assert_not_called()
+    mock_console_print.assert_called_once_with()
+    mock_console_info.assert_called_once_with("exited with EOF")
+
+
+def test_interpreter_loop_keyboard_interrupt(mocker: MockerFixture):
+    mock_console_clear = mocker.patch("repli.console.Console.clear")
+    mock_interpreter_render = mocker.patch("repli.interpreter.Interpreter.render")
+    mock_console_input = mocker.patch(
+        "repli.console.Console.input", side_effect=KeyboardInterrupt
+    )
+    mock_interpreter_execute = mocker.patch("repli.interpreter.Interpreter.execute")
+
+    interpreter = Interpreter()
+    interpreter.loop(is_test=True)
+
+    mock_console_clear.assert_called_once()
+    mock_interpreter_render.assert_called_once()
+    mock_console_input.assert_called_once_with(
+        prompt=f"{interpreter.prompt} ", markup=False
+    )
+    mock_interpreter_execute.assert_not_called()

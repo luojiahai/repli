@@ -12,6 +12,10 @@ DEFAULT_NAME: str = "[🐟]"
 DEFAULT_PROMPT: str = ">"
 
 
+class NoArgumentsError(Exception):
+    pass
+
+
 class Interpreter:
     def __init__(
         self,
@@ -114,7 +118,7 @@ class Interpreter:
 
     def execute(self, args: List[str]) -> bool:
         if not args:
-            return False
+            raise NoArgumentsError("no arguments provided")
 
         result: Optional[bool] = None
         try:
@@ -129,6 +133,7 @@ class Interpreter:
                     console.input(prompt="press enter to continue")
                 if isinstance(command, Page):
                     self._pages.append(command)
+                    result = False
             else:
                 raise Exception(f"command not found: {args[0]}")
         except Exception as e:
@@ -136,7 +141,7 @@ class Interpreter:
             console.input(prompt="press enter to continue")
         return result
 
-    def loop(self) -> None:
+    def loop(self, is_test: bool = False) -> None:
         line: Optional[str] = None
         args: Optional[str] = None
         status: bool = False
@@ -148,9 +153,15 @@ class Interpreter:
                 line = console.input(prompt=f"{self.prompt} ", markup=False)
                 args = line.split()
                 status = self.execute(args)
+            except NoArgumentsError:
+                status = False
             except EOFError:
                 status = True
                 console.print()
                 console.info("exited with EOF")
             except KeyboardInterrupt:
                 status = False
+            finally:
+                # break loop if testing
+                if is_test:
+                    break
