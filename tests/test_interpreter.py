@@ -1,20 +1,13 @@
 from pytest_mock import MockerFixture
 from repli.command import Command, Page
 from repli.interpreter import Interpreter
+from rich import box
 
 
 def test_interpreter_init(mocker: MockerFixture):
     mock_page = mocker.MagicMock()
-    mock_command_exit_return_value = mocker.MagicMock()
-    mock_command_quit_return_value = mocker.MagicMock()
-    mock_command_exit = mocker.patch(
-        "repli.interpreter.Interpreter.command_exit",
-        return_value=mock_command_exit_return_value
-    )
-    mock_command_quit = mocker.patch(
-        "repli.interpreter.Interpreter.command_quit",
-        return_value=mock_command_quit_return_value
-    )
+    mock_command_exit = mocker.patch("repli.interpreter.Interpreter.command_exit")
+    mock_command_quit = mocker.patch("repli.interpreter.Interpreter.command_quit")
 
     interpreter = Interpreter(name="name", prompt="prompt", page=mock_page)
 
@@ -23,8 +16,8 @@ def test_interpreter_init(mocker: MockerFixture):
     assert interpreter.pages == [mock_page]
     assert interpreter.current_page == mock_page
     assert interpreter.builtins == {
-        "e": mock_command_exit_return_value,
-        "q": mock_command_quit_return_value
+        "e": mock_command_exit.return_value,
+        "q": mock_command_quit.return_value,
     }
     mock_command_exit.assert_called_once_with("e")
     mock_command_quit.assert_called_once_with("q")
@@ -104,8 +97,12 @@ def test_interpreter_panel(mocker: MockerFixture):
     spy_rich_table_add_row = mocker.spy(mock_rich_table.return_value, "add_row")
 
     interpreter = Interpreter()
-    command = Command(name="test", description="description", callback=mocker.MagicMock())
-    page = Page(name="page", description="description", commands={command.name: command})
+    command = Command(
+        name="test", description="description", callback=mocker.MagicMock()
+    )
+    page = Page(
+        name="page", description="description", commands={command.name: command}
+    )
     mocker.patch.object(interpreter, "_pages", [page])
     panel = interpreter.panel()
 
@@ -123,3 +120,65 @@ def test_interpreter_panel(mocker: MockerFixture):
         ]
     )
     spy_rich_table_add_row.assert_called_once_with(command.name, command.description)
+
+
+def test_interpreter_footer(mocker: MockerFixture):
+    mock_rich_text = mocker.patch("repli.interpreter.Text")
+    spy_rich_text_append = mocker.spy(mock_rich_text.return_value, "append")
+
+    interpreter = Interpreter()
+    command_1 = Command(
+        name="test1", description="description", callback=mocker.MagicMock()
+    )
+    command_2 = Command(
+        name="test2", description="description", callback=mocker.MagicMock()
+    )
+    builtins = {command_1.name: command_1, command_2.name: command_2}
+    mocker.patch.object(interpreter, "_builtins", builtins)
+    footer = interpreter.footer()
+
+    assert footer == mock_rich_text.return_value
+    mock_rich_text.assert_called_once_with()
+    spy_rich_text_append.assert_has_calls(
+        [
+            mocker.call(f"{command_1.name}", style="bold cyan"),
+            mocker.call(f"  {command_1.description}"),
+            mocker.call("  |  ", style="dim"),
+            mocker.call(f"{command_2.name}", style="bold cyan"),
+            mocker.call(f"  {command_2.description}"),
+        ]
+    )
+
+
+def test_interpreter_render(mocker: MockerFixture):
+    mock_rich_table = mocker.patch("repli.interpreter.Table")
+    spy_rich_table_add_column = mocker.spy(mock_rich_table.return_value, "add_column")
+    spy_rich_table_add_row = mocker.spy(mock_rich_table.return_value, "add_row")
+    mock_rich_padding = mocker.patch("repli.interpreter.Padding")
+    mock_interpreter_header = mocker.patch("repli.interpreter.Interpreter.header")
+    mock_interpreter_panel = mocker.patch("repli.interpreter.Interpreter.panel")
+    mock_interpreter_footer = mocker.patch("repli.interpreter.Interpreter.footer")
+    mock_console_print = mocker.patch("repli.console.Console.print")
+
+    interpreter = Interpreter()
+    interpreter.render()
+
+    mock_rich_table.assert_called_once_with(
+        box=box.SQUARE,
+        expand=True,
+        show_footer=True,
+        header_style=None,
+        footer_style=None,
+        border_style="cyan",
+    )
+    spy_rich_table_add_column.assert_called_once_with(
+        header=mock_interpreter_header.return_value,
+        footer=mock_interpreter_footer.return_value,
+    )
+    spy_rich_table_add_row.assert_called_once_with(
+        mock_rich_padding(renderable=mock_interpreter_panel.return_value, pad=(1, 0))
+    )
+    mock_console_print.assert_called_once_with(mock_rich_table.return_value)
+    mock_interpreter_header.assert_called_once()
+    mock_interpreter_panel.assert_called_once()
+    mock_interpreter_footer.assert_called_once()

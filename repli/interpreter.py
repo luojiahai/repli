@@ -93,7 +93,7 @@ class Interpreter:
     def footer(self) -> Text:
         footer: Text = Text()
         for key, value in self.builtins.items():
-            footer.append(f"{key}", style="bold cyan")
+            footer.append(f"{value.name}", style="bold cyan")
             footer.append(f"  {value.description}")
             if key != list(self.builtins.keys())[-1]:
                 footer.append("  |  ", style="dim")
