@@ -1,7 +1,6 @@
 import readline
 from repli import console
-from repli.command import Command
-from repli.page import Page
+from repli.command import Command, Page
 from rich import box
 from rich.padding import Padding
 from rich.table import Table
