@@ -58,8 +58,7 @@ def test_callback_native_function_call_exception(mocker: MockerFixture):
     mock_console_print = mocker.patch("repli.console.Console.print")
     mock_console_error = mocker.patch("repli.console.Console.error")
     mock_rich_rule = mocker.patch("repli.callback.Rule")
-    mock_callable = mocker.MagicMock()
-    mock_callable.side_effect = Exception("test")
+    mock_callable = mocker.MagicMock(side_effect=Exception("test"))
 
     native_function = NativeFunction(callable=mock_callable)
     result = native_function("arg1", "arg2", kwarg1="kwarg1", kwarg2="kwarg2")
@@ -93,12 +92,9 @@ def test_callback_subprocess_call(mocker: MockerFixture):
     mock_console_error = mocker.patch("repli.console.Console.error")
     mock_console_print = mocker.patch("repli.console.Console.print")
     mock_rich_rule = mocker.patch("repli.callback.Rule")
-    mock_callable = mocker.MagicMock()
-    mock_callable.return_value = "test"
-    mock_subprocess_call = mocker.patch("subprocess.call")
-    mock_subprocess_call.return_value = False
-    mock_shlex_split = mocker.patch("shlex.split")
-    mock_shlex_split.return_value = ["test"]
+    mock_callable = mocker.MagicMock(return_value="test")
+    mock_subprocess_call = mocker.patch("subprocess.call", return_value=False)
+    mock_shlex_split = mocker.patch("shlex.split", return_value=["test"])
 
     subprocess = Subprocess(callable=mock_callable)
     result = subprocess("arg1", "arg2", kwarg1="kwarg1", kwarg2="kwarg2")
@@ -132,12 +128,9 @@ def test_callback_subprocess_call_bad_return_code(mocker: MockerFixture):
     mock_console_error = mocker.patch("repli.console.Console.error")
     mock_console_print = mocker.patch("repli.console.Console.print")
     mock_rich_rule = mocker.patch("repli.callback.Rule")
-    mock_callable = mocker.MagicMock()
-    mock_callable.return_value = "test"
-    mock_subprocess_call = mocker.patch("subprocess.call")
-    mock_subprocess_call.return_value = 1
-    mock_shlex_split = mocker.patch("shlex.split")
-    mock_shlex_split.return_value = ["test"]
+    mock_callable = mocker.MagicMock(return_value="test")
+    mock_subprocess_call = mocker.patch("subprocess.call", return_value=1)
+    mock_shlex_split = mocker.patch("shlex.split", return_value=["test"])
 
     subprocess = Subprocess(callable=mock_callable)
     result = subprocess("arg1", "arg2", kwarg1="kwarg1", kwarg2="kwarg2")
@@ -171,12 +164,9 @@ def test_callback_subprocess_call_exception(mocker: MockerFixture):
     mock_console_error = mocker.patch("repli.console.Console.error")
     mock_console_print = mocker.patch("repli.console.Console.print")
     mock_rich_rule = mocker.patch("repli.callback.Rule")
-    mock_callable = mocker.MagicMock()
-    mock_callable.return_value = "test"
-    mock_subprocess_call = mocker.patch("subprocess.call")
-    mock_subprocess_call.side_effect = Exception("test")
-    mock_shlex_split = mocker.patch("shlex.split")
-    mock_shlex_split.return_value = ["test"]
+    mock_callable = mocker.MagicMock(return_value="test")
+    mock_subprocess_call = mocker.patch("subprocess.call", side_effect=Exception("test"))
+    mock_shlex_split = mocker.patch("shlex.split", return_value=["test"])
 
     subprocess = Subprocess(callable=mock_callable)
     result = subprocess("arg1", "arg2", kwarg1="kwarg1", kwarg2="kwarg2")
