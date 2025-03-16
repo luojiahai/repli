@@ -66,8 +66,20 @@ poetry shell
 poetry install
 ```
 
+Format:
+
+```shell
+poetry run black ./example ./repli ./tests
+```
+
+Lint:
+
+```shell
+poetry run flake8
+```
+
 Test:
 
 ```shell
-poetry run pytest
+poetry run coverage run -m pytest
 ```

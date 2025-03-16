@@ -84,6 +84,15 @@ def test_page_factory_command_invalid_type(mocker: MockerFixture):
         assert str(e) == "invalid callback type"
 
 
+def test_page_factory_add_page(mocker: MockerFixture):
+    page_factory = PageFactory()
+    mock_page = mocker.MagicMock()
+    mocker.patch.object(mock_page, "name", "test")
+    page_factory.add_page(page=mock_page)
+    assert "test" in page_factory.commands
+    assert page_factory.commands["test"] == mock_page
+
+
 def test_page_factory_get(mocker: MockerFixture):
     page_factory = PageFactory()
     mocker.patch.object(page_factory, "_commands", {"test": mocker.MagicMock()})

@@ -79,8 +79,6 @@ class PageFactory:
 
         return decorator
 
-    def add_page(self, page: Page, name: str, description: str) -> None:
-        page.name = name
-        page.description = description
-        self.validate(name)
+    def add_page(self, page: Page) -> None:
+        self.validate(page.name)
         self.commands[page.name] = page
