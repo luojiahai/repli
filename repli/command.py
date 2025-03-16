@@ -62,6 +62,7 @@ class PageFactory:
 
     def command(self, type: Type, name: str, description: str) -> Callable:
         self.validate(name)
+
         def decorator(callable: Callable[[str, str], Callback]) -> None:
             if type == NativeFunction:
                 callback = NativeFunction(callable=callable)

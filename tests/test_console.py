@@ -8,6 +8,7 @@ def test_console_info(mocker: MockerFixture):
     console.info('message')
     mock_console_print.assert_called_with(f'{PREFIX} {INFO_PREFIX} message', style='magenta', markup=False)
 
+
 def test_console_error(mocker: MockerFixture):
     mock_console_print = mocker.patch("repli.console.Console.print")
     console.error('message')

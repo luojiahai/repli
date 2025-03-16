@@ -11,6 +11,7 @@ def test_command_init(mocker: MockerFixture):
     assert command.description == 'description'
     assert command.callback == mock_callback
 
+
 def test_page_init(mocker: MockerFixture):
     mock_commands = mocker.MagicMock()
     page = Page(name='name', description='description', commands=mock_commands)
@@ -18,9 +19,11 @@ def test_page_init(mocker: MockerFixture):
     assert page.description == 'description'
     assert page.commands == mock_commands
 
+
 def test_page_factory_init():
     page_factory = PageFactory()
     assert page_factory.commands == {}
+
 
 def test_page_factory_validate_name_in_commands(mocker: MockerFixture):
     page_factory = PageFactory()
@@ -30,6 +33,7 @@ def test_page_factory_validate_name_in_commands(mocker: MockerFixture):
     except ValueError as e:
         assert str(e) == 'page or command with name \'name\' already exists in current page'
 
+
 def test_page_factory_validate_name_in_reserved_names(mocker: MockerFixture):
     page_factory = PageFactory()
     mocker.patch('repli.command.RESERVED_NAMES', ['test'])
@@ -37,6 +41,7 @@ def test_page_factory_validate_name_in_reserved_names(mocker: MockerFixture):
         page_factory.validate('test')
     except ValueError as e:
         assert str(e) == 'page or command name \'test\' is reserved'
+
 
 def test_page_factory_command_native_function(mocker: MockerFixture):
     page_factory = PageFactory()
@@ -52,6 +57,7 @@ def test_page_factory_command_native_function(mocker: MockerFixture):
     assert isinstance(command.callback, NativeFunction)
     assert command.callback.callable == mock_callable
 
+
 def test_page_factory_command_subprocess(mocker: MockerFixture):
     page_factory = PageFactory()
     mock_callable = mocker.MagicMock()
@@ -66,6 +72,7 @@ def test_page_factory_command_subprocess(mocker: MockerFixture):
     assert isinstance(command.callback, Subprocess)
     assert command.callback.callable == mock_callable
 
+
 def test_page_factory_command_invalid_type(mocker: MockerFixture):
     page_factory = PageFactory()
     try:
@@ -73,6 +80,7 @@ def test_page_factory_command_invalid_type(mocker: MockerFixture):
         decorator(mocker.MagicMock())
     except ValueError as e:
         assert str(e) == 'invalid callback type'
+
 
 def test_page_factory_get(mocker: MockerFixture):
     page_factory = PageFactory()

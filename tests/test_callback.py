@@ -16,10 +16,12 @@ def test_callback_call(mocker: MockerFixture):
     mock_console_error.assert_not_called()
     assert result == False
 
+
 def test_callback_native_function_init(mocker: MockerFixture):
     mock_callable = mocker.MagicMock()
     native_function = NativeFunction(callable=mock_callable)
     assert native_function.callable == mock_callable
+
 
 def test_callback_native_function_call(mocker: MockerFixture):
     mock_callback_call = mocker.patch("repli.callback.Callback.__call__")
@@ -40,6 +42,7 @@ def test_callback_native_function_call(mocker: MockerFixture):
     mock_console_error.assert_not_called()
     assert result == False
 
+
 def test_callback_native_function_call_exception(mocker: MockerFixture):
     mock_callback_call = mocker.patch("repli.callback.Callback.__call__")
     mock_console_print = mocker.patch("repli.console.Console.print")
@@ -59,10 +62,12 @@ def test_callback_native_function_call_exception(mocker: MockerFixture):
     mock_console_error.assert_called_once_with('native function raised an exception: test')
     assert result == False
 
+
 def test_callback_subprocess_init(mocker: MockerFixture):
     mock_callable = mocker.MagicMock()
     subprocess = Subprocess(callable=mock_callable)
     assert subprocess.callable == mock_callable
+
 
 def test_callback_subprocess_call(mocker: MockerFixture):
     mock_callback_call = mocker.patch("repli.callback.Callback.__call__")
@@ -93,6 +98,7 @@ def test_callback_subprocess_call(mocker: MockerFixture):
     mock_shlex_split.assert_called_once_with('test')
     mock_console_error.assert_not_called()
     assert result == False
+
 
 def test_callback_subprocess_call_exception(mocker: MockerFixture):
     mock_callback_call = mocker.patch("repli.callback.Callback.__call__")
