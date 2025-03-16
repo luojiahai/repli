@@ -2,7 +2,7 @@ from repli.callback import Callback, NativeFunction, Subprocess
 from typing import Callable, Dict, List, Optional, Self, Type, Union
 
 
-RESERVED_NAMES: List[str] = ['e', 'q']
+RESERVED_NAMES: List[str] = ["e", "q"]
 
 
 class Command:
@@ -25,7 +25,9 @@ class Command:
 
 
 class Page:
-    def __init__(self, name: str, description: str, commands: Dict[str, Union[Command, Self]]) -> None:
+    def __init__(
+        self, name: str, description: str, commands: Dict[str, Union[Command, Self]]
+    ) -> None:
         self._name: str = name
         self._description: str = description
         self._commands: Dict[str, Union[Command, Self]] = commands
@@ -56,9 +58,11 @@ class PageFactory:
 
     def validate(self, name: str) -> None:
         if name in self.commands:
-            raise ValueError(f'page or command with name \'{name}\' already exists in current page')
+            raise ValueError(
+                f"page or command with name '{name}' already exists in current page"
+            )
         if name in RESERVED_NAMES:
-            raise ValueError(f'page or command name \'{name}\' is reserved')
+            raise ValueError(f"page or command name '{name}' is reserved")
 
     def command(self, type: Type, name: str, description: str) -> Callable:
         self.validate(name)
@@ -69,9 +73,10 @@ class PageFactory:
             elif type == Subprocess:
                 callback = Subprocess(callable=callable)
             else:
-                raise ValueError('invalid callback type')
+                raise ValueError("invalid callback type")
             command = Command(name=name, description=description, callback=callback)
             self.commands[name] = command
+
         return decorator
 
     def add_page(self, page: Page, name: str, description: str) -> None:

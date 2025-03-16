@@ -7,12 +7,16 @@ def test_callback_call(mocker: MockerFixture):
     mock_console_error = mocker.patch("repli.console.Console.error")
 
     callback = Callback()
-    result = callback('arg1', 'arg2', kwarg1='kwarg1', kwarg2='kwarg2')
+    result = callback("arg1", "arg2", kwarg1="kwarg1", kwarg2="kwarg2")
 
-    mock_console_info.assert_has_calls([
-        mocker.call('callback function args: (\'arg1\', \'arg2\')'),
-        mocker.call('callback function kwargs: {\'kwarg1\': \'kwarg1\', \'kwarg2\': \'kwarg2\'}'),
-    ])
+    mock_console_info.assert_has_calls(
+        [
+            mocker.call("callback function args: ('arg1', 'arg2')"),
+            mocker.call(
+                "callback function kwargs: {'kwarg1': 'kwarg1', 'kwarg2': 'kwarg2'}"
+            ),
+        ]
+    )
     mock_console_error.assert_not_called()
     assert result == False
 
@@ -31,14 +35,20 @@ def test_callback_native_function_call(mocker: MockerFixture):
     mock_callable = mocker.MagicMock()
 
     native_function = NativeFunction(callable=mock_callable)
-    result = native_function('arg1', 'arg2', kwarg1='kwarg1', kwarg2='kwarg2')
+    result = native_function("arg1", "arg2", kwarg1="kwarg1", kwarg2="kwarg2")
 
-    mock_callback_call.assert_called_once_with('arg1', 'arg2', kwarg1='kwarg1', kwarg2='kwarg2')
-    mock_console_print.assert_has_calls([
-        mocker.call(mock_rich_rule(style='magenta')),
-        mocker.call(mock_rich_rule(style='magenta')),
-    ])
-    mock_callable.assert_called_once_with('arg1', 'arg2', kwarg1='kwarg1', kwarg2='kwarg2')
+    mock_callback_call.assert_called_once_with(
+        "arg1", "arg2", kwarg1="kwarg1", kwarg2="kwarg2"
+    )
+    mock_console_print.assert_has_calls(
+        [
+            mocker.call(mock_rich_rule(style="magenta")),
+            mocker.call(mock_rich_rule(style="magenta")),
+        ]
+    )
+    mock_callable.assert_called_once_with(
+        "arg1", "arg2", kwarg1="kwarg1", kwarg2="kwarg2"
+    )
     mock_console_error.assert_not_called()
     assert result == False
 
@@ -49,17 +59,25 @@ def test_callback_native_function_call_exception(mocker: MockerFixture):
     mock_console_error = mocker.patch("repli.console.Console.error")
     mock_rich_rule = mocker.patch("repli.callback.Rule")
     mock_callable = mocker.MagicMock()
-    mock_callable.side_effect = Exception('test')
+    mock_callable.side_effect = Exception("test")
 
     native_function = NativeFunction(callable=mock_callable)
-    result = native_function('arg1', 'arg2', kwarg1='kwarg1', kwarg2='kwarg2')
+    result = native_function("arg1", "arg2", kwarg1="kwarg1", kwarg2="kwarg2")
 
-    mock_callback_call.assert_called_once_with('arg1', 'arg2', kwarg1='kwarg1', kwarg2='kwarg2')
-    mock_console_print.assert_has_calls([
-        mocker.call(mock_rich_rule(style='magenta')),
-    ])
-    mock_callable.assert_called_once_with('arg1', 'arg2', kwarg1='kwarg1', kwarg2='kwarg2')
-    mock_console_error.assert_called_once_with('native function raised an exception: test')
+    mock_callback_call.assert_called_once_with(
+        "arg1", "arg2", kwarg1="kwarg1", kwarg2="kwarg2"
+    )
+    mock_console_print.assert_has_calls(
+        [
+            mocker.call(mock_rich_rule(style="magenta")),
+        ]
+    )
+    mock_callable.assert_called_once_with(
+        "arg1", "arg2", kwarg1="kwarg1", kwarg2="kwarg2"
+    )
+    mock_console_error.assert_called_once_with(
+        "native function raised an exception: test"
+    )
     assert result == False
 
 
@@ -76,26 +94,34 @@ def test_callback_subprocess_call(mocker: MockerFixture):
     mock_console_print = mocker.patch("repli.console.Console.print")
     mock_rich_rule = mocker.patch("repli.callback.Rule")
     mock_callable = mocker.MagicMock()
-    mock_callable.return_value = 'test'
+    mock_callable.return_value = "test"
     mock_subprocess_call = mocker.patch("subprocess.call")
     mock_subprocess_call.return_value = False
     mock_shlex_split = mocker.patch("shlex.split")
-    mock_shlex_split.return_value = ['test']
+    mock_shlex_split.return_value = ["test"]
 
     subprocess = Subprocess(callable=mock_callable)
-    result = subprocess('arg1', 'arg2', kwarg1='kwarg1', kwarg2='kwarg2')
+    result = subprocess("arg1", "arg2", kwarg1="kwarg1", kwarg2="kwarg2")
 
-    mock_callback_call.assert_called_once_with('arg1', 'arg2', kwarg1='kwarg1', kwarg2='kwarg2')
-    mock_console_info.assert_has_calls([
-        mocker.call('running subprocess command: \'test\'')
-    ])
-    mock_console_print.assert_has_calls([
-        mocker.call(mock_rich_rule(style='magenta')),
-        mocker.call(mock_rich_rule(style='magenta')),
-    ])
-    mock_callable.assert_called_once_with('arg1', 'arg2', kwarg1='kwarg1', kwarg2='kwarg2')
-    mock_subprocess_call.assert_called_once_with(args=['test'], text=True, encoding='utf-8')
-    mock_shlex_split.assert_called_once_with('test')
+    mock_callback_call.assert_called_once_with(
+        "arg1", "arg2", kwarg1="kwarg1", kwarg2="kwarg2"
+    )
+    mock_console_info.assert_has_calls(
+        [mocker.call("running subprocess command: 'test'")]
+    )
+    mock_console_print.assert_has_calls(
+        [
+            mocker.call(mock_rich_rule(style="magenta")),
+            mocker.call(mock_rich_rule(style="magenta")),
+        ]
+    )
+    mock_callable.assert_called_once_with(
+        "arg1", "arg2", kwarg1="kwarg1", kwarg2="kwarg2"
+    )
+    mock_subprocess_call.assert_called_once_with(
+        args=["test"], text=True, encoding="utf-8"
+    )
+    mock_shlex_split.assert_called_once_with("test")
     mock_console_error.assert_not_called()
     assert result == False
 
@@ -107,24 +133,32 @@ def test_callback_subprocess_call_exception(mocker: MockerFixture):
     mock_console_print = mocker.patch("repli.console.Console.print")
     mock_rich_rule = mocker.patch("repli.callback.Rule")
     mock_callable = mocker.MagicMock()
-    mock_callable.return_value = 'test'
+    mock_callable.return_value = "test"
     mock_subprocess_call = mocker.patch("subprocess.call")
-    mock_subprocess_call.side_effect = Exception('test')
+    mock_subprocess_call.side_effect = Exception("test")
     mock_shlex_split = mocker.patch("shlex.split")
-    mock_shlex_split.return_value = ['test']
+    mock_shlex_split.return_value = ["test"]
 
     subprocess = Subprocess(callable=mock_callable)
-    result = subprocess('arg1', 'arg2', kwarg1='kwarg1', kwarg2='kwarg2')
+    result = subprocess("arg1", "arg2", kwarg1="kwarg1", kwarg2="kwarg2")
 
-    mock_callback_call.assert_called_once_with('arg1', 'arg2', kwarg1='kwarg1', kwarg2='kwarg2')
-    mock_console_info.assert_has_calls([
-        mocker.call('running subprocess command: \'test\'')
-    ])
-    mock_console_print.assert_has_calls([
-        mocker.call(mock_rich_rule(style='magenta')),
-    ])
-    mock_callable.assert_called_once_with('arg1', 'arg2', kwarg1='kwarg1', kwarg2='kwarg2')
-    mock_subprocess_call.assert_called_once_with(args=['test'], text=True, encoding='utf-8')
-    mock_shlex_split.assert_called_once_with('test')
-    mock_console_error.assert_called_once_with('subprocess raised an exception: test')
+    mock_callback_call.assert_called_once_with(
+        "arg1", "arg2", kwarg1="kwarg1", kwarg2="kwarg2"
+    )
+    mock_console_info.assert_has_calls(
+        [mocker.call("running subprocess command: 'test'")]
+    )
+    mock_console_print.assert_has_calls(
+        [
+            mocker.call(mock_rich_rule(style="magenta")),
+        ]
+    )
+    mock_callable.assert_called_once_with(
+        "arg1", "arg2", kwarg1="kwarg1", kwarg2="kwarg2"
+    )
+    mock_subprocess_call.assert_called_once_with(
+        args=["test"], text=True, encoding="utf-8"
+    )
+    mock_shlex_split.assert_called_once_with("test")
+    mock_console_error.assert_called_once_with("subprocess raised an exception: test")
     assert result == False
