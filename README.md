@@ -96,7 +96,7 @@ poetry run black ./example ./repli ./tests
 Lint:
 
 ```shell
-poetry run flake8 .
+poetry run flake8 ./example ./repli ./tests --config ./.flake8
 ```
 
 Test:

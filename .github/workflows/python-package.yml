@@ -50,7 +50,7 @@ jobs:
 
     - name: Lint
       run: |
-        poetry run flake8 .
+        poetry run flake8 ./example ./repli ./tests --config ./.flake8
 
     - name: Test and coverage
       run: |
