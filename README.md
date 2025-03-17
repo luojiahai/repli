@@ -50,7 +50,8 @@ def command_do_something():
     return "echo something else"
 
 nested_page_factory = PageFactory()
-page_factory.add_page(page=nested_page_factory.get(name="3", description="nested page"))
+nested_page = nested_page_factory.get(name="3", description="nested page")
+page_factory.add_page(page=nested_page)
 
 page = page_factory.get(name="home", description="home")
 interpreter = Interpreter(page=page, name="myapp")
@@ -105,7 +106,7 @@ poetry run pytest
 Coverage:
 
 ```shell
-poetry run coverage run -m pytest
+poetry run coverage run -m pytest &&
 poetry run coverage report -m
 ```
 

@@ -17,7 +17,8 @@ def command_do_something():
 
 
 nested_page_factory = PageFactory()
-page_factory.add_page(page=nested_page_factory.get(name="3", description="nested page"))
+nested_page = nested_page_factory.get(name="3", description="nested page")
+page_factory.add_page(page=nested_page)
 
 
 def main():
