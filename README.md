@@ -84,7 +84,7 @@ poetry run example
 Type check:
 
 ```shell
-poetry run mypy .
+poetry run mypy ./example ./repli ./tests
 ```
 
 Format:

@@ -46,7 +46,7 @@ jobs:
 
     - name: Type check
       run: |
-        poetry run mypy .
+        poetry run mypy ./example ./repli ./tests
 
     - name: Lint
       run: |
