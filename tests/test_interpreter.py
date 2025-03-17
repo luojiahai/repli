@@ -169,7 +169,7 @@ def test_interpreter_render(mocker: MockerFixture):
         show_footer=True,
         header_style=None,
         footer_style=None,
-        border_style="cyan",
+        border_style="dim cyan",
     )
     spy_rich_table_add_column.assert_called_once_with(
         header=mock_interpreter_header.return_value,

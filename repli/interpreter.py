@@ -117,7 +117,7 @@ class Interpreter:
             show_footer=True,
             header_style=None,
             footer_style=None,
-            border_style="cyan",
+            border_style="dim cyan",
         )
         interface.add_column(header=self.header(), footer=self.footer())
         interface.add_row(Padding(renderable=self.panel(), pad=(1, 0)))
