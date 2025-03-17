@@ -21,6 +21,6 @@ page_factory.add_page(page=nested_page_factory.get(name="3", description="nested
 
 
 def main():
-    page = page_factory.get(name="example", description="example page")
-    interpreter = Interpreter(page=page)
+    page = page_factory.get(name="home", description="home")
+    interpreter = Interpreter(page=page, name="myapp")
     interpreter.loop()

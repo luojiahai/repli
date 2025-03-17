@@ -83,7 +83,7 @@ def test_interpreter_header(mocker: MockerFixture):
     mock_rich_text.assert_called_once_with(style="cyan")
     spy_rich_text_append.assert_has_calls(
         [
-            mocker.call(f"{interpreter.name} ", style="bold"),
+            mocker.call(f"[{interpreter.name}] ", style="bold"),
             mocker.call(f"{page_1.description}"),
             mocker.call(" > "),
             mocker.call(f"{page_2.description}", style="bold underline"),

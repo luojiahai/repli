@@ -17,7 +17,7 @@ Features:
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│ home                                                         │
+│ [myapp] home                                                 │
 ├──────────────────────────────────────────────────────────────┤
 │                                                              │
 │ 1  print hello world                                         │
@@ -52,8 +52,8 @@ def command_do_something():
 nested_page_factory = PageFactory()
 page_factory.add_page(page=nested_page_factory.get(name="3", description="nested page"))
 
-page = page_factory.get(name="example", description="example page")
-interpreter = Interpreter(page=page)
+page = page_factory.get(name="home", description="home")
+interpreter = Interpreter(page=page, name="myapp")
 interpreter.loop()
 ```
 

@@ -13,7 +13,7 @@ from repli.console import Console
 console: Console = Console()
 
 
-DEFAULT_NAME: str = "[🐟]"
+DEFAULT_NAME: str = "🐟"
 DEFAULT_PROMPT: str = ">"
 
 
@@ -78,7 +78,7 @@ class Interpreter:
 
     def header(self) -> Text:
         header: Text = Text(style="cyan")
-        header.append(f"{self.name} ", style="bold")
+        header.append(f"[{self.name}] ", style="bold")
         for index, page in enumerate(self.pages):
             if index == len(self.pages) - 1:
                 header.append(f"{page.description}", style="bold underline")
