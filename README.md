@@ -112,5 +112,5 @@ poetry run coverage report -m
 Export requirements.txt:
 
 ```shell
-poetry export --without-hashes --format=requirements.txt > requirements.txt
+poetry export --dev --without-hashes --format=requirements.txt > requirements.txt
 ```
