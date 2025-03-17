@@ -7,6 +7,7 @@ from repli.callback import Subprocess
 def test_command_init(mocker: MockerFixture):
     mock_callback = mocker.MagicMock()
     command = Command(name="name", description="description", callback=mock_callback)
+
     assert command.name == "name"
     assert command.description == "description"
     assert command.callback == mock_callback
@@ -15,6 +16,7 @@ def test_command_init(mocker: MockerFixture):
 def test_page_init(mocker: MockerFixture):
     mock_commands = mocker.MagicMock()
     page = Page(name="name", description="description", commands=mock_commands)
+
     assert page.name == "name"
     assert page.description == "description"
     assert page.commands == mock_commands
@@ -22,12 +24,14 @@ def test_page_init(mocker: MockerFixture):
 
 def test_page_factory_init():
     page_factory = PageFactory()
+
     assert page_factory.commands == {}
 
 
 def test_page_factory_validate_name_in_commands(mocker: MockerFixture):
     page_factory = PageFactory()
     mocker.patch.object(page_factory, "_commands", {"name": mocker.MagicMock()})
+
     try:
         page_factory.validate("name")
     except ValueError as e:
@@ -39,6 +43,7 @@ def test_page_factory_validate_name_in_commands(mocker: MockerFixture):
 def test_page_factory_validate_name_in_reserved_names(mocker: MockerFixture):
     page_factory = PageFactory()
     mocker.patch("repli.command.RESERVED_NAMES", ["test"])
+
     try:
         page_factory.validate("test")
     except ValueError as e:
@@ -77,6 +82,7 @@ def test_page_factory_command_subprocess(mocker: MockerFixture):
 
 def test_page_factory_command_invalid_type(mocker: MockerFixture):
     page_factory = PageFactory()
+
     try:
         decorator = page_factory.command(str, "test_command", "test description")
         decorator(mocker.MagicMock())
@@ -89,6 +95,7 @@ def test_page_factory_add_page(mocker: MockerFixture):
     mock_page = mocker.MagicMock()
     mocker.patch.object(mock_page, "name", "test")
     page_factory.add_page(page=mock_page)
+
     assert "test" in page_factory.commands
     assert page_factory.commands["test"] == mock_page
 
@@ -97,6 +104,7 @@ def test_page_factory_get(mocker: MockerFixture):
     page_factory = PageFactory()
     mocker.patch.object(page_factory, "_commands", {"test": mocker.MagicMock()})
     page = page_factory.get("test", "test description")
+
     assert page.name == "test"
     assert page.description == "test description"
     assert page.commands == page.commands

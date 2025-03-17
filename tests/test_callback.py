@@ -23,7 +23,9 @@ def test_callback_call(mocker: MockerFixture):
 
 def test_callback_builtin_init(mocker: MockerFixture):
     mock_callable = mocker.MagicMock()
+
     builtin = Builtin(callable=mock_callable)
+
     assert builtin.callable == mock_callable
 
 
@@ -43,7 +45,9 @@ def test_callback_builtin_call(mocker: MockerFixture):
 
 def test_callback_native_function_init(mocker: MockerFixture):
     mock_callable = mocker.MagicMock()
+
     native_function = NativeFunction(callable=mock_callable)
+
     assert native_function.callable == mock_callable
 
 
@@ -102,7 +106,9 @@ def test_callback_native_function_call_exception(mocker: MockerFixture):
 
 def test_callback_subprocess_init(mocker: MockerFixture):
     mock_callable = mocker.MagicMock()
+
     subprocess = Subprocess(callable=mock_callable)
+
     assert subprocess.callable == mock_callable
 
 
