@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "repli"
-version = "0.2.3"
+version = "0.2.4"
 description = "Read–Eval–Print Loop Interpreter"
 authors = ["luojiahai <luo@jiahai.co>"]
 readme = "README.md"
