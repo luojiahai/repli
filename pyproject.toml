@@ -2,7 +2,7 @@
 name = "repli"
 version = "0.2.3"
 description = "Read–Eval–Print Loop Interpreter"
-authors = ["luojiahai <ljiahai@hotmail.com>"]
+authors = ["luojiahai <luo@jiahai.co>"]
 readme = "README.md"
 
 [tool.poetry.scripts]
