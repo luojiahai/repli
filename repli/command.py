@@ -1,5 +1,5 @@
 from repli.callback import Callback, NativeFunction, Subprocess
-from typing import Callable, Dict, List, Optional, Self, Type, Union
+from typing import Any, Callable, Dict, List, Self, Type, Union
 
 
 RESERVED_NAMES: List[str] = ["e", "q"]
@@ -33,11 +33,11 @@ class Page:
         self._commands: Dict[str, Union[Command, Self]] = commands
 
     @property
-    def name(self) -> Optional[str]:
+    def name(self) -> str:
         return self._name
 
     @property
-    def description(self) -> Optional[str]:
+    def description(self) -> str:
         return self._description
 
     @property
@@ -67,7 +67,8 @@ class PageFactory:
     def command(self, type: Type, name: str, description: str) -> Callable:
         self.validate(name)
 
-        def decorator(callable: Callable[[str, str], Callback]) -> None:
+        def decorator(callable: Callable[[str, str], Any]) -> None:
+            callback: Callback
             if type == NativeFunction:
                 callback = NativeFunction(callable=callable)
             elif type == Subprocess:

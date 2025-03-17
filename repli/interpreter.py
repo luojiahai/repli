@@ -1,11 +1,16 @@
 import readline
-from repli import console
+from repli.callback import Builtin
 from repli.command import Command, Page
 from rich import box
 from rich.padding import Padding
 from rich.table import Table
 from rich.text import Text
 from typing import Dict, List, Optional, Union
+
+from repli.console import Console
+
+
+console: Console = Console()
 
 
 DEFAULT_NAME: str = "[🐟]"
@@ -19,9 +24,9 @@ class NoArgumentsError(Exception):
 class Interpreter:
     def __init__(
         self,
+        page: Page,
         name: str = DEFAULT_NAME,
         prompt: str = DEFAULT_PROMPT,
-        page: Optional[Page] = None,
     ) -> None:
         self._name: str = name
         self._prompt: str = prompt
@@ -52,14 +57,15 @@ class Interpreter:
         return self.pages[-1]
 
     def command_exit(self, name: str) -> Command:
-        def exit() -> bool:
+        def exit(*args, **kwargs) -> bool:
             console.info("exited")
             return True
 
-        return Command(name=name, description="exit application", callback=exit)
+        callback = Builtin(callable=exit)
+        return Command(name=name, description="exit application", callback=callback)
 
     def command_quit(self, name: str) -> Command:
-        def quit() -> bool:
+        def quit(*args, **kwargs) -> bool:
             if len(self.pages) == 0:
                 raise Exception("no pages to quit")
             if len(self.pages) == 1:
@@ -67,7 +73,8 @@ class Interpreter:
             self._pages.pop()
             return False
 
-        return Command(name=name, description="quit current page", callback=quit)
+        callback = Builtin(callable=quit)
+        return Command(name=name, description="quit current page", callback=callback)
 
     def header(self) -> Text:
         header: Text = Text(style="cyan")
@@ -120,7 +127,7 @@ class Interpreter:
         if not args:
             raise NoArgumentsError("no arguments provided")
 
-        result: Optional[bool] = None
+        result: bool = False
         try:
             if args[0] in self.builtins:
                 result = self.builtins[args[0]].callback()
@@ -133,7 +140,6 @@ class Interpreter:
                     console.input(prompt="press enter to continue")
                 if isinstance(command, Page):
                     self._pages.append(command)
-                    result = False
             else:
                 raise Exception(f"command not found: {args[0]}")
         except Exception as e:
@@ -142,17 +148,14 @@ class Interpreter:
         return result
 
     def loop(self, is_test: bool = False) -> None:
-        line: Optional[str] = None
-        args: Optional[str] = None
         status: bool = False
-
         while not status:
             console.clear()
             self.render()
             try:
-                line = console.input(prompt=f"{self.prompt} ", markup=False)
-                args = line.split()
-                status = self.execute(args)
+                line: str = console.input(prompt=f"{self.prompt} ", markup=False)
+                args: List[str] = line.split()
+                status = self.execute(args=args)
             except NoArgumentsError:
                 status = False
             except EOFError:
@@ -162,6 +165,6 @@ class Interpreter:
             except KeyboardInterrupt:
                 status = False
 
-            # break loop if testing
+            # exit the loop after one iteration if running in test mode
             if is_test:
                 break

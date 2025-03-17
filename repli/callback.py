@@ -1,9 +1,12 @@
 import abc
 import subprocess
 import shlex
-from repli import console
+from repli.console import Console
 from rich.rule import Rule
-from typing import Callable
+from typing import Any, Callable
+
+
+console: Console = Console()
 
 
 class Callback(abc.ABC):
@@ -16,16 +19,32 @@ class Callback(abc.ABC):
         return False
 
 
+class Builtin(Callback):
+    def __init__(
+        self,
+        callable: Callable[[str, str], Any],
+    ) -> None:
+        super().__init__()
+        self._callable: Callable[[str, str], Any] = callable
+
+    @property
+    def callable(self) -> Callable[[str, str], Any]:
+        return self._callable
+
+    def __call__(self, *args: str, **kwargs: str) -> bool:
+        return self.callable(*args, **kwargs)
+
+
 class NativeFunction(Callback):
     def __init__(
         self,
-        callable: Callable[[str, str], None],
+        callable: Callable[[str, str], Any],
     ) -> None:
         super().__init__()
-        self._callable: Callable[[str, str], None] = callable
+        self._callable: Callable[[str, str], Any] = callable
 
     @property
-    def callable(self) -> Callable[[str, str], None]:
+    def callable(self) -> Callable[[str, str], Any]:
         return self._callable
 
     def __call__(self, *args: str, **kwargs: str) -> bool:

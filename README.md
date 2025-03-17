@@ -78,6 +78,12 @@ Run example application:
 poetry run example
 ```
 
+Type check:
+
+```shell
+poetry run mypy .
+```
+
 Format:
 
 ```shell

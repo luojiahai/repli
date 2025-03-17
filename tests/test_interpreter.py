@@ -9,7 +9,7 @@ def test_interpreter_init(mocker: MockerFixture):
     mock_command_exit = mocker.patch("repli.interpreter.Interpreter.command_exit")
     mock_command_quit = mocker.patch("repli.interpreter.Interpreter.command_quit")
 
-    interpreter = Interpreter(name="name", prompt="prompt", page=mock_page)
+    interpreter = Interpreter(page=mock_page, name="name", prompt="prompt")
 
     assert interpreter.name == "name"
     assert interpreter.prompt == "prompt"
@@ -26,7 +26,7 @@ def test_interpreter_init(mocker: MockerFixture):
 def test_interpreter_command_exit(mocker: MockerFixture):
     mock_console_info = mocker.patch("repli.console.Console.info")
 
-    interpreter = Interpreter()
+    interpreter = Interpreter(page=mocker.MagicMock())
     command = interpreter.command_exit("test")
     result = command.callback()
 
@@ -37,7 +37,7 @@ def test_interpreter_command_exit(mocker: MockerFixture):
 
 
 def test_interpreter_command_quit(mocker: MockerFixture):
-    interpreter = Interpreter()
+    interpreter = Interpreter(page=mocker.MagicMock())
     command = interpreter.command_quit("test")
     mocker.patch.object(interpreter, "_pages", [mocker.MagicMock(), mocker.MagicMock()])
     result = command.callback()
@@ -48,7 +48,7 @@ def test_interpreter_command_quit(mocker: MockerFixture):
 
 
 def test_interpreter_command_quit_no_pages(mocker: MockerFixture):
-    interpreter = Interpreter()
+    interpreter = Interpreter(page=mocker.MagicMock())
     mocker.patch.object(interpreter, "_pages", [])
     command = interpreter.command_quit("test")
 
@@ -59,7 +59,7 @@ def test_interpreter_command_quit_no_pages(mocker: MockerFixture):
 
 
 def test_interpreter_command_quit_root_page(mocker: MockerFixture):
-    interpreter = Interpreter()
+    interpreter = Interpreter(page=mocker.MagicMock())
     mocker.patch.object(interpreter, "_pages", [mocker.MagicMock()])
     command = interpreter.command_quit("test")
 
@@ -73,7 +73,7 @@ def test_interpreter_header(mocker: MockerFixture):
     mock_rich_text = mocker.patch("repli.interpreter.Text")
     spy_rich_text_append = mocker.spy(mock_rich_text.return_value, "append")
 
-    interpreter = Interpreter()
+    interpreter = Interpreter(page=mocker.MagicMock())
     page_1 = Page(name="page_1", description="description_1", commands={})
     page_2 = Page(name="page_2", description="description_2", commands={})
     mocker.patch.object(interpreter, "_pages", [page_1, page_2])
@@ -96,7 +96,7 @@ def test_interpreter_panel(mocker: MockerFixture):
     spy_rich_table_add_column = mocker.spy(mock_rich_table.return_value, "add_column")
     spy_rich_table_add_row = mocker.spy(mock_rich_table.return_value, "add_row")
 
-    interpreter = Interpreter()
+    interpreter = Interpreter(page=mocker.MagicMock())
     command = Command(
         name="test", description="description", callback=mocker.MagicMock()
     )
@@ -126,7 +126,7 @@ def test_interpreter_footer(mocker: MockerFixture):
     mock_rich_text = mocker.patch("repli.interpreter.Text")
     spy_rich_text_append = mocker.spy(mock_rich_text.return_value, "append")
 
-    interpreter = Interpreter()
+    interpreter = Interpreter(page=mocker.MagicMock())
     command_1 = Command(
         name="test1", description="description", callback=mocker.MagicMock()
     )
@@ -160,7 +160,7 @@ def test_interpreter_render(mocker: MockerFixture):
     mock_interpreter_footer = mocker.patch("repli.interpreter.Interpreter.footer")
     mock_console_print = mocker.patch("repli.console.Console.print")
 
-    interpreter = Interpreter()
+    interpreter = Interpreter(page=mocker.MagicMock())
     interpreter.render()
 
     mock_rich_table.assert_called_once_with(
@@ -185,7 +185,7 @@ def test_interpreter_render(mocker: MockerFixture):
 
 
 def test_interpreter_execute_no_args(mocker: MockerFixture):
-    interpreter = Interpreter()
+    interpreter = Interpreter(page=mocker.MagicMock())
 
     try:
         interpreter.execute(args=[])
@@ -196,7 +196,7 @@ def test_interpreter_execute_no_args(mocker: MockerFixture):
 def test_interpreter_execute_builtin_command(mocker: MockerFixture):
     mock_callback = mocker.MagicMock(return_value=False)
 
-    interpreter = Interpreter()
+    interpreter = Interpreter(page=mocker.MagicMock())
     builtin_command = Command(
         name="test", description="description", callback=mock_callback
     )
@@ -255,7 +255,7 @@ def test_interpreter_loop(mocker: MockerFixture):
     )
     mock_interpreter_execute = mocker.patch("repli.interpreter.Interpreter.execute")
 
-    interpreter = Interpreter()
+    interpreter = Interpreter(page=mocker.MagicMock())
     interpreter.loop(is_test=True)
 
     mock_console_clear.assert_called_once()
@@ -263,20 +263,18 @@ def test_interpreter_loop(mocker: MockerFixture):
     mock_console_input.assert_called_once_with(
         prompt=f"{interpreter.prompt} ", markup=False
     )
-    mock_interpreter_execute.assert_called_once_with(["test", "arg1", "arg2"])
+    mock_interpreter_execute.assert_called_once_with(args=["test", "arg1", "arg2"])
 
 
 def test_interpreter_loop_no_args(mocker: MockerFixture):
     mock_console_clear = mocker.patch("repli.console.Console.clear")
     mock_interpreter_render = mocker.patch("repli.interpreter.Interpreter.render")
-    mock_console_input = mocker.patch(
-        "repli.console.Console.input", return_value="test arg1 arg2"
-    )
+    mock_console_input = mocker.patch("repli.console.Console.input", return_value="")
     mock_interpreter_execute = mocker.patch(
         "repli.interpreter.Interpreter.execute", side_effect=NoArgumentsError
     )
 
-    interpreter = Interpreter()
+    interpreter = Interpreter(page=mocker.MagicMock())
     interpreter.loop(is_test=True)
 
     mock_console_clear.assert_called_once()
@@ -284,7 +282,7 @@ def test_interpreter_loop_no_args(mocker: MockerFixture):
     mock_console_input.assert_called_once_with(
         prompt=f"{interpreter.prompt} ", markup=False
     )
-    mock_interpreter_execute.assert_called_once_with(["test", "arg1", "arg2"])
+    mock_interpreter_execute.assert_called_once_with(args=[])
 
 
 def test_interpreter_loop_eof(mocker: MockerFixture):
@@ -297,7 +295,7 @@ def test_interpreter_loop_eof(mocker: MockerFixture):
     mock_console_print = mocker.patch("repli.console.Console.print")
     mock_console_info = mocker.patch("repli.console.Console.info")
 
-    interpreter = Interpreter()
+    interpreter = Interpreter(page=mocker.MagicMock())
     interpreter.loop(is_test=True)
 
     mock_console_clear.assert_called_once()
@@ -318,7 +316,7 @@ def test_interpreter_loop_keyboard_interrupt(mocker: MockerFixture):
     )
     mock_interpreter_execute = mocker.patch("repli.interpreter.Interpreter.execute")
 
-    interpreter = Interpreter()
+    interpreter = Interpreter(page=mocker.MagicMock())
     interpreter.loop(is_test=True)
 
     mock_console_clear.assert_called_once()

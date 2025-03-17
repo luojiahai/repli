@@ -1,5 +1,5 @@
 from pytest_mock import MockerFixture
-from repli.callback import Callback, NativeFunction, Subprocess
+from repli.callback import Builtin, Callback, NativeFunction, Subprocess
 
 
 def test_callback_call(mocker: MockerFixture):
@@ -18,6 +18,26 @@ def test_callback_call(mocker: MockerFixture):
         ]
     )
     mock_console_error.assert_not_called()
+    assert result == False
+
+
+def test_callback_builtin_init(mocker: MockerFixture):
+    mock_callable = mocker.MagicMock()
+    builtin = Builtin(callable=mock_callable)
+    assert builtin.callable == mock_callable
+
+
+def test_callback_builtin_call(mocker: MockerFixture):
+    mock_callback_call = mocker.patch("repli.callback.Callback.__call__")
+    mock_callable = mocker.MagicMock(return_value=False)
+
+    builtin = Builtin(callable=mock_callable)
+    result = builtin("arg1", "arg2", kwarg1="kwarg1", kwarg2="kwarg2")
+
+    mock_callback_call.assert_not_called()
+    mock_callable.assert_called_once_with(
+        "arg1", "arg2", kwarg1="kwarg1", kwarg2="kwarg2"
+    )
     assert result == False
 
 
