@@ -38,6 +38,8 @@ pip install repli
 
 ## Usage
 
+Example:
+
 ```python
 page_factory = PageFactory()
 
@@ -58,7 +60,7 @@ interpreter = Interpreter(page=page, name="myapp")
 interpreter.loop()
 ```
 
-See the example [source](./example).
+[Source](./example)
 
 ## Development
 
@@ -110,7 +112,7 @@ poetry run coverage run -m pytest &&
 poetry run coverage report -m
 ```
 
-Export requirements.txt:
+Export `requirements.txt`:
 
 ```shell
 poetry export --dev --without-hashes --format=requirements.txt > requirements.txt
