@@ -41,21 +41,19 @@ pip install repli
 Example:
 
 ```python
-page_factory = PageFactory()
+page = Page(name="0", description="home")
 
-@page_factory.command(type=NativeFunction, name="1", description="print hello world")
+@page.command(type=NativeFunction, name="1", description="print hello world")
 def command_print_hello_world():
     print("hello world")
 
-@page_factory.command(type=Subprocess, name="2", description="do something")
+@page.command(type=Subprocess, name="2", description="do something")
 def command_do_something():
     return "echo something else"
 
-nested_page_factory = PageFactory()
-nested_page = nested_page_factory.get(name="3", description="nested page")
-page_factory.add_page(page=nested_page)
+nested_page = Page(name="3", description="nested page")
+page.add_page(page=nested_page)
 
-page = page_factory.get(name="home", description="home")
 interpreter = Interpreter(page=page, name="myapp")
 interpreter.loop()
 ```

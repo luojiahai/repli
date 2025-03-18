@@ -25,12 +25,10 @@ class Command:
 
 
 class Page:
-    def __init__(
-        self, name: str, description: str, commands: Dict[str, Union[Command, Self]]
-    ) -> None:
+    def __init__(self, name: str, description: str) -> None:
         self._name: str = name
         self._description: str = description
-        self._commands: Dict[str, Union[Command, Self]] = commands
+        self._commands: Dict[str, Union[Command, Self]] = {}
 
     @property
     def name(self) -> str:
@@ -43,18 +41,6 @@ class Page:
     @property
     def commands(self) -> Dict[str, Union[Command, Self]]:
         return self._commands
-
-
-class PageFactory:
-    def __init__(self) -> None:
-        self._commands: Dict[str, Union[Command, Page]] = {}
-
-    @property
-    def commands(self) -> Dict[str, Union[Command, Page]]:
-        return self._commands
-
-    def get(self, name: str, description: str) -> Page:
-        return Page(name=name, description=description, commands=self.commands)
 
     def validate(self, name: str) -> None:
         if name in self.commands:
@@ -80,6 +66,6 @@ class PageFactory:
 
         return decorator
 
-    def add_page(self, page: Page) -> None:
+    def add_page(self, page: Self) -> None:
         self.validate(page.name)
         self.commands[page.name] = page

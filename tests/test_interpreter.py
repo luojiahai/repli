@@ -74,8 +74,8 @@ def test_interpreter_header(mocker: MockerFixture):
     spy_rich_text_append = mocker.spy(mock_rich_text.return_value, "append")
 
     interpreter = Interpreter(page=mocker.MagicMock())
-    page_1 = Page(name="page_1", description="description_1", commands={})
-    page_2 = Page(name="page_2", description="description_2", commands={})
+    page_1 = Page(name="page_1", description="description_1")
+    page_2 = Page(name="page_2", description="description_2")
     mocker.patch.object(interpreter, "_pages", [page_1, page_2])
     header = interpreter.header()
 
@@ -100,9 +100,8 @@ def test_interpreter_panel(mocker: MockerFixture):
     command = Command(
         name="test", description="description", callback=mocker.MagicMock()
     )
-    page = Page(
-        name="page", description="description", commands={command.name: command}
-    )
+    page = Page(name="page", description="description")
+    mocker.patch.object(page, "_commands", {command.name: command})
     mocker.patch.object(interpreter, "_pages", [page])
     panel = interpreter.panel()
 
@@ -212,9 +211,8 @@ def test_interpreter_execute_command(mocker: MockerFixture):
     mock_console_input = mocker.patch("repli.console.Console.input")
 
     command = Command(name="test", description="description", callback=mock_callback)
-    page = Page(
-        name="page", description="description", commands={command.name: command}
-    )
+    page = Page(name="page", description="description")
+    mocker.patch.object(page, "_commands", {command.name: command})
     interpreter = Interpreter(page=page)
     result = interpreter.execute(args=["test", "arg1", "arg2"])
 
@@ -224,10 +222,9 @@ def test_interpreter_execute_command(mocker: MockerFixture):
 
 
 def test_interpreter_execute_page(mocker: MockerFixture):
-    nested_page = Page(name="test", description="description", commands={})
-    page = Page(
-        name="page", description="description", commands={nested_page.name: nested_page}
-    )
+    nested_page = Page(name="test", description="description")
+    page = Page(name="page", description="description")
+    mocker.patch.object(page, "_commands", {nested_page.name: nested_page})
     interpreter = Interpreter(page=page)
     result = interpreter.execute(args=["test"])
 
@@ -239,7 +236,7 @@ def test_interpreter_execute_command_not_found(mocker: MockerFixture):
     mock_console_error = mocker.patch("repli.console.Console.error")
     mock_console_input = mocker.patch("repli.console.Console.input")
 
-    page = Page(name="page", description="description", commands={})
+    page = Page(name="page", description="description")
     interpreter = Interpreter(page=page)
     interpreter.execute(args=["test"])
 
