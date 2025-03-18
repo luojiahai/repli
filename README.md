@@ -9,6 +9,8 @@
 
 It's a Python package for building command-line terminal applications.
 
+Don't save frequently used commands in NotePad. Don't alias complex commands. Build a Read–Eval–Print Loop (REPL) style terminal application containing pre-defined commands for easy executions from terminal.
+
 Preview of the [example](./example/) application in terminal:
 
 ```
