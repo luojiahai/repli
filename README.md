@@ -9,7 +9,7 @@
 
 It's a Python package for building command-line terminal applications.
 
-Don't save frequently used commands in NotePad. Don't alias complex commands. Build a Read–Eval–Print Loop (REPL) style terminal application containing pre-defined commands for easy executions from terminal.
+Don't save frequently used commands in NotePad. Don't alias a lot of complex commands. Build a Read–Eval–Print Loop (REPL) style terminal application containing pre-defined commands for easy executions from terminal.
 
 Preview of the [example](./example/) application in terminal:
 
@@ -51,17 +51,17 @@ pip install repli
 [Example](./example/):
 
 ```python
-page = Page(name="0", description="home")
+page = Page(description="home")
 
-@page.command(type=NativeFunction, name="1", description="print hello world")
+@page.command(type=NativeFunction, description="print hello world")
 def command_print_hello_world():
     print("hello world")
 
-@page.command(type=Subprocess, name="2", description="do something")
+@page.command(type=Subprocess, description="do something")
 def command_do_something():
     return "echo something else"
 
-nested_page = Page(name="3", description="nested page")
+nested_page = Page(description="nested page")
 page.add_page(page=nested_page)
 
 interpreter = Interpreter(page=page, name="myapp")

@@ -26,8 +26,8 @@ class Interpreter:
         self._name: str = name
         self._prompt: str = prompt
         self._builtins: Dict[str, Command] = {
-            "e": self.command_exit("e"),
-            "q": self.command_quit("q"),
+            "e": self.command_exit(),
+            "q": self.command_quit(),
         }
         self._pages: List[Page] = [page]
 
@@ -51,15 +51,15 @@ class Interpreter:
     def current_page(self) -> Page:
         return self.pages[-1]
 
-    def command_exit(self, name: str) -> Command:
+    def command_exit(self) -> Command:
         def exit(*args, **kwargs) -> bool:
             console.info("exited")
             return True
 
         callback = Builtin(callable=exit)
-        return Command(name=name, description="exit application", callback=callback)
+        return Command(description="exit application", callback=callback)
 
-    def command_quit(self, name: str) -> Command:
+    def command_quit(self) -> Command:
         def quit(*args, **kwargs) -> bool:
             if len(self.pages) == 0:
                 raise Exception("no pages to quit")
@@ -69,7 +69,7 @@ class Interpreter:
             return False
 
         callback = Builtin(callable=quit)
-        return Command(name=name, description="quit page", callback=callback)
+        return Command(description="quit page", callback=callback)
 
     def header(self) -> Text:
         header: Text = Text(style="cyan")
@@ -90,16 +90,16 @@ class Interpreter:
             box=None,
             pad_edge=False,
         )
-        table.add_column("name", style="bold cyan")
+        table.add_column("index", style="bold cyan")
         table.add_column("description", justify="left", ratio=1)
-        for _, value in self.current_page.commands.items():
-            table.add_row(value.name, value.description)
+        for key, value in self.current_page.commands.items():
+            table.add_row(key, value.description)
         return table
 
     def footer(self) -> Text:
         footer: Text = Text()
         for key, value in self.builtins.items():
-            footer.append(f"{value.name}", style="bold cyan")
+            footer.append(f"{key}", style="bold cyan")
             footer.append(f"  {value.description}")
             if key != list(self.builtins.keys())[-1]:
                 footer.append("  |  ", style="dim")

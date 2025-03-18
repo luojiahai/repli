@@ -19,18 +19,17 @@ def test_interpreter_init(mocker: MockerFixture):
         "e": mock_command_exit.return_value,
         "q": mock_command_quit.return_value,
     }
-    mock_command_exit.assert_called_once_with("e")
-    mock_command_quit.assert_called_once_with("q")
+    mock_command_exit.assert_called_once()
+    mock_command_quit.assert_called_once()
 
 
 def test_interpreter_command_exit(mocker: MockerFixture):
     mock_console_info = mocker.patch("repli.console.Console.info")
 
     interpreter = Interpreter(page=mocker.MagicMock())
-    command = interpreter.command_exit("test")
+    command = interpreter.command_exit()
     result = command.callback()
 
-    assert command.name == "test"
     assert command.description == "exit application"
     mock_console_info.assert_called_once_with("exited")
     assert result == True
@@ -38,11 +37,10 @@ def test_interpreter_command_exit(mocker: MockerFixture):
 
 def test_interpreter_command_quit(mocker: MockerFixture):
     interpreter = Interpreter(page=mocker.MagicMock())
-    command = interpreter.command_quit("test")
+    command = interpreter.command_quit()
     mocker.patch.object(interpreter, "_pages", [mocker.MagicMock(), mocker.MagicMock()])
     result = command.callback()
 
-    assert command.name == "test"
     assert command.description == "quit page"
     assert result == False
 
@@ -50,7 +48,7 @@ def test_interpreter_command_quit(mocker: MockerFixture):
 def test_interpreter_command_quit_no_pages(mocker: MockerFixture):
     interpreter = Interpreter(page=mocker.MagicMock())
     mocker.patch.object(interpreter, "_pages", [])
-    command = interpreter.command_quit("test")
+    command = interpreter.command_quit()
 
     try:
         command.callback()
@@ -61,7 +59,7 @@ def test_interpreter_command_quit_no_pages(mocker: MockerFixture):
 def test_interpreter_command_quit_root_page(mocker: MockerFixture):
     interpreter = Interpreter(page=mocker.MagicMock())
     mocker.patch.object(interpreter, "_pages", [mocker.MagicMock()])
-    command = interpreter.command_quit("test")
+    command = interpreter.command_quit()
 
     try:
         command.callback()
@@ -74,8 +72,8 @@ def test_interpreter_header(mocker: MockerFixture):
     spy_rich_text_append = mocker.spy(mock_rich_text.return_value, "append")
 
     interpreter = Interpreter(page=mocker.MagicMock())
-    page_1 = Page(name="page_1", description="description_1")
-    page_2 = Page(name="page_2", description="description_2")
+    page_1 = Page(description="description_1")
+    page_2 = Page(description="description_2")
     mocker.patch.object(interpreter, "_pages", [page_1, page_2])
     header = interpreter.header()
 
@@ -97,9 +95,9 @@ def test_interpreter_panel(mocker: MockerFixture):
     spy_rich_table_add_row = mocker.spy(mock_rich_table.return_value, "add_row")
 
     interpreter = Interpreter(page=mocker.MagicMock())
-    command = Command(name="test", description="description", callback=mocker.MagicMock())
-    page = Page(name="page", description="description")
-    mocker.patch.object(page, "_commands", {command.name: command})
+    command = Command(description="description", callback=mocker.MagicMock())
+    page = Page(description="description")
+    mocker.patch.object(page, "_commands", {"1": command})
     mocker.patch.object(interpreter, "_pages", [page])
     panel = interpreter.panel()
 
@@ -112,11 +110,11 @@ def test_interpreter_panel(mocker: MockerFixture):
     )
     spy_rich_table_add_column.assert_has_calls(
         [
-            mocker.call("name", style="bold cyan"),
+            mocker.call("index", style="bold cyan"),
             mocker.call("description", justify="left", ratio=1),
         ]
     )
-    spy_rich_table_add_row.assert_called_once_with(command.name, command.description)
+    spy_rich_table_add_row.assert_called_once_with("1", command.description)
 
 
 def test_interpreter_footer(mocker: MockerFixture):
@@ -124,9 +122,9 @@ def test_interpreter_footer(mocker: MockerFixture):
     spy_rich_text_append = mocker.spy(mock_rich_text.return_value, "append")
 
     interpreter = Interpreter(page=mocker.MagicMock())
-    command_1 = Command(name="test1", description="description", callback=mocker.MagicMock())
-    command_2 = Command(name="test2", description="description", callback=mocker.MagicMock())
-    builtins = {command_1.name: command_1, command_2.name: command_2}
+    command_1 = Command(description="description", callback=mocker.MagicMock())
+    command_2 = Command(description="description", callback=mocker.MagicMock())
+    builtins = {"test1": command_1, "test2": command_2}
     mocker.patch.object(interpreter, "_builtins", builtins)
     footer = interpreter.footer()
 
@@ -134,10 +132,10 @@ def test_interpreter_footer(mocker: MockerFixture):
     mock_rich_text.assert_called_once_with()
     spy_rich_text_append.assert_has_calls(
         [
-            mocker.call(f"{command_1.name}", style="bold cyan"),
+            mocker.call("test1", style="bold cyan"),
             mocker.call(f"  {command_1.description}"),
             mocker.call("  |  ", style="dim"),
-            mocker.call(f"{command_2.name}", style="bold cyan"),
+            mocker.call("test2", style="bold cyan"),
             mocker.call(f"  {command_2.description}"),
         ]
     )
@@ -188,7 +186,7 @@ def test_interpreter_execute_builtin_command(mocker: MockerFixture):
     mock_callback = mocker.MagicMock(return_value=False)
 
     interpreter = Interpreter(page=mocker.MagicMock())
-    builtin_command = Command(name="test", description="description", callback=mock_callback)
+    builtin_command = Command(description="description", callback=mock_callback)
     mocker.patch.object(interpreter, "_builtins", {"test": builtin_command})
     result = interpreter.execute(args=["test"])
 
@@ -200,11 +198,11 @@ def test_interpreter_execute_command(mocker: MockerFixture):
     mock_callback = mocker.MagicMock(return_value=False)
     mock_console_input = mocker.patch("repli.console.Console.input")
 
-    command = Command(name="test", description="description", callback=mock_callback)
-    page = Page(name="page", description="description")
-    mocker.patch.object(page, "_commands", {command.name: command})
+    command = Command(description="description", callback=mock_callback)
+    page = Page(description="description")
+    mocker.patch.object(page, "_commands", {"1": command})
     interpreter = Interpreter(page=page)
-    result = interpreter.execute(args=["test", "arg1", "arg2"])
+    result = interpreter.execute(args=["1", "arg1", "arg2"])
 
     mock_callback.assert_called_once_with("arg1", "arg2")
     mock_console_input.assert_called_once_with(prompt="press enter to continue")
@@ -212,11 +210,11 @@ def test_interpreter_execute_command(mocker: MockerFixture):
 
 
 def test_interpreter_execute_page(mocker: MockerFixture):
-    nested_page = Page(name="test", description="description")
-    page = Page(name="page", description="description")
-    mocker.patch.object(page, "_commands", {nested_page.name: nested_page})
+    nested_page = Page(description="description_1")
+    page = Page(description="description_2")
+    mocker.patch.object(page, "_commands", {"1": nested_page})
     interpreter = Interpreter(page=page)
-    result = interpreter.execute(args=["test"])
+    result = interpreter.execute(args=["1"])
 
     assert page in interpreter.pages
     assert result == False
@@ -226,7 +224,7 @@ def test_interpreter_execute_command_not_found(mocker: MockerFixture):
     mock_console_error = mocker.patch("repli.console.Console.error")
     mock_console_input = mocker.patch("repli.console.Console.input")
 
-    page = Page(name="page", description="description")
+    page = Page(description="description")
     interpreter = Interpreter(page=page)
     interpreter.execute(args=["test"])
 

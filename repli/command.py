@@ -6,14 +6,9 @@ RESERVED_NAMES: List[str] = ["e", "q"]
 
 
 class Command:
-    def __init__(self, name: str, description: str, callback: Callback) -> None:
-        self._name: str = name
+    def __init__(self, description: str, callback: Callback) -> None:
         self._description: str = description
         self._callback: Callback = callback
-
-    @property
-    def name(self) -> str:
-        return self._name
 
     @property
     def description(self) -> str:
@@ -25,14 +20,10 @@ class Command:
 
 
 class Page:
-    def __init__(self, name: str, description: str) -> None:
-        self._name: str = name
+    def __init__(self, description: str) -> None:
         self._description: str = description
         self._commands: Dict[str, Union[Command, Self]] = {}
-
-    @property
-    def name(self) -> str:
-        return self._name
+        self._index: int = 1
 
     @property
     def description(self) -> str:
@@ -42,15 +33,11 @@ class Page:
     def commands(self) -> Dict[str, Union[Command, Self]]:
         return self._commands
 
-    def validate(self, name: str) -> None:
-        if name in self.commands:
-            raise ValueError(f"page or command with name '{name}' already exists in current page")
-        if name in RESERVED_NAMES:
-            raise ValueError(f"page or command name '{name}' is reserved")
+    @property
+    def index(self) -> int:
+        return self._index
 
-    def command(self, type: Type, name: str, description: str) -> Callable:
-        self.validate(name)
-
+    def command(self, type: Type, description: str) -> Callable:
         def decorator(callable: Callable[[str, str], Any]) -> None:
             callback: Callback
             if type == NativeFunction:
@@ -59,11 +46,12 @@ class Page:
                 callback = Subprocess(callable=callable)
             else:
                 raise ValueError("invalid callback type")
-            command = Command(name=name, description=description, callback=callback)
-            self.commands[name] = command
+            command = Command(description=description, callback=callback)
+            self.commands[str(self.index)] = command
+            self._index += 1
 
         return decorator
 
     def add_page(self, page: Self) -> None:
-        self.validate(page.name)
-        self.commands[page.name] = page
+        self.commands[str(self.index)] = page
+        self._index += 1
