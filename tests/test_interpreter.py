@@ -97,9 +97,7 @@ def test_interpreter_panel(mocker: MockerFixture):
     spy_rich_table_add_row = mocker.spy(mock_rich_table.return_value, "add_row")
 
     interpreter = Interpreter(page=mocker.MagicMock())
-    command = Command(
-        name="test", description="description", callback=mocker.MagicMock()
-    )
+    command = Command(name="test", description="description", callback=mocker.MagicMock())
     page = Page(name="page", description="description")
     mocker.patch.object(page, "_commands", {command.name: command})
     mocker.patch.object(interpreter, "_pages", [page])
@@ -126,12 +124,8 @@ def test_interpreter_footer(mocker: MockerFixture):
     spy_rich_text_append = mocker.spy(mock_rich_text.return_value, "append")
 
     interpreter = Interpreter(page=mocker.MagicMock())
-    command_1 = Command(
-        name="test1", description="description", callback=mocker.MagicMock()
-    )
-    command_2 = Command(
-        name="test2", description="description", callback=mocker.MagicMock()
-    )
+    command_1 = Command(name="test1", description="description", callback=mocker.MagicMock())
+    command_2 = Command(name="test2", description="description", callback=mocker.MagicMock())
     builtins = {command_1.name: command_1, command_2.name: command_2}
     mocker.patch.object(interpreter, "_builtins", builtins)
     footer = interpreter.footer()
@@ -194,9 +188,7 @@ def test_interpreter_execute_builtin_command(mocker: MockerFixture):
     mock_callback = mocker.MagicMock(return_value=False)
 
     interpreter = Interpreter(page=mocker.MagicMock())
-    builtin_command = Command(
-        name="test", description="description", callback=mock_callback
-    )
+    builtin_command = Command(name="test", description="description", callback=mock_callback)
     mocker.patch.object(interpreter, "_builtins", {"test": builtin_command})
     result = interpreter.execute(args=["test"])
 
@@ -245,9 +237,7 @@ def test_interpreter_execute_command_not_found(mocker: MockerFixture):
 def test_interpreter_loop(mocker: MockerFixture):
     mock_console_clear = mocker.patch("repli.console.Console.clear")
     mock_interpreter_render = mocker.patch("repli.interpreter.Interpreter.render")
-    mock_console_input = mocker.patch(
-        "repli.console.Console.input", return_value="test arg1 arg2"
-    )
+    mock_console_input = mocker.patch("repli.console.Console.input", return_value="test arg1 arg2")
     mock_interpreter_execute = mocker.patch("repli.interpreter.Interpreter.execute")
 
     interpreter = Interpreter(page=mocker.MagicMock())
@@ -255,18 +245,14 @@ def test_interpreter_loop(mocker: MockerFixture):
 
     mock_console_clear.assert_called_once()
     mock_interpreter_render.assert_called_once()
-    mock_console_input.assert_called_once_with(
-        prompt=f"{interpreter.prompt} ", markup=False
-    )
+    mock_console_input.assert_called_once_with(prompt=f"{interpreter.prompt} ", markup=False)
     mock_interpreter_execute.assert_called_once_with(args=["test", "arg1", "arg2"])
 
 
 def test_interpreter_loop_eof(mocker: MockerFixture):
     mock_console_clear = mocker.patch("repli.console.Console.clear")
     mock_interpreter_render = mocker.patch("repli.interpreter.Interpreter.render")
-    mock_console_input = mocker.patch(
-        "repli.console.Console.input", side_effect=EOFError
-    )
+    mock_console_input = mocker.patch("repli.console.Console.input", side_effect=EOFError)
     mock_interpreter_execute = mocker.patch("repli.interpreter.Interpreter.execute")
     mock_console_print = mocker.patch("repli.console.Console.print")
     mock_console_info = mocker.patch("repli.console.Console.info")
@@ -276,9 +262,7 @@ def test_interpreter_loop_eof(mocker: MockerFixture):
 
     mock_console_clear.assert_called_once()
     mock_interpreter_render.assert_called_once()
-    mock_console_input.assert_called_once_with(
-        prompt=f"{interpreter.prompt} ", markup=False
-    )
+    mock_console_input.assert_called_once_with(prompt=f"{interpreter.prompt} ", markup=False)
     mock_interpreter_execute.assert_not_called()
     mock_console_print.assert_called_once_with()
     mock_console_info.assert_called_once_with("exited with EOF")
@@ -287,9 +271,7 @@ def test_interpreter_loop_eof(mocker: MockerFixture):
 def test_interpreter_loop_keyboard_interrupt(mocker: MockerFixture):
     mock_console_clear = mocker.patch("repli.console.Console.clear")
     mock_interpreter_render = mocker.patch("repli.interpreter.Interpreter.render")
-    mock_console_input = mocker.patch(
-        "repli.console.Console.input", side_effect=KeyboardInterrupt
-    )
+    mock_console_input = mocker.patch("repli.console.Console.input", side_effect=KeyboardInterrupt)
     mock_interpreter_execute = mocker.patch("repli.interpreter.Interpreter.execute")
 
     interpreter = Interpreter(page=mocker.MagicMock())
@@ -297,7 +279,5 @@ def test_interpreter_loop_keyboard_interrupt(mocker: MockerFixture):
 
     mock_console_clear.assert_called_once()
     mock_interpreter_render.assert_called_once()
-    mock_console_input.assert_called_once_with(
-        prompt=f"{interpreter.prompt} ", markup=False
-    )
+    mock_console_input.assert_called_once_with(prompt=f"{interpreter.prompt} ", markup=False)
     mock_interpreter_execute.assert_not_called()

@@ -24,6 +24,9 @@ mypy = "^1.15.0"
 [tool.isort]
 profile = "black"
 
+[tool.black]
+line-length = 127
+
 
 [build-system]
 requires = ["poetry-core"]

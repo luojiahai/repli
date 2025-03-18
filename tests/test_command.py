@@ -30,9 +30,7 @@ def test_page_validate_name_in_commands(mocker: MockerFixture):
     try:
         page.validate("name")
     except ValueError as e:
-        assert (
-            str(e) == "page or command with name 'name' already exists in current page"
-        )
+        assert str(e) == "page or command with name 'name' already exists in current page"
 
 
 def test_page_validate_name_in_reserved_names(mocker: MockerFixture):

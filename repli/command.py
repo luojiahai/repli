@@ -44,9 +44,7 @@ class Page:
 
     def validate(self, name: str) -> None:
         if name in self.commands:
-            raise ValueError(
-                f"page or command with name '{name}' already exists in current page"
-            )
+            raise ValueError(f"page or command with name '{name}' already exists in current page")
         if name in RESERVED_NAMES:
             raise ValueError(f"page or command name '{name}' is reserved")
 

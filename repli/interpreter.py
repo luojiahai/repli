@@ -127,9 +127,7 @@ class Interpreter:
             if args[0] in self.builtins:
                 result = self.builtins[args[0]].callback()
             elif args[0] in self.current_page.commands:
-                command: Optional[Union[Command, Page]] = (
-                    self.current_page.commands.get(args[0])
-                )
+                command: Optional[Union[Command, Page]] = self.current_page.commands.get(args[0])
                 if isinstance(command, Command):
                     result = command.callback(*args[1:])
                     console.input(prompt="press enter to continue")

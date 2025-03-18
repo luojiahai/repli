@@ -8,9 +8,7 @@ def test_console_info(mocker: MockerFixture):
     console = Console()
     console.info("message")
 
-    mock_console_print.assert_called_with(
-        "info: message", style="magenta", markup=False
-    )
+    mock_console_print.assert_called_with("info: message", style="magenta", markup=False)
 
 
 def test_console_error(mocker: MockerFixture):
@@ -19,6 +17,4 @@ def test_console_error(mocker: MockerFixture):
     console = Console()
     console.error("message")
 
-    mock_console_print.assert_called_with(
-        "error: message", style="yellow", markup=False
-    )
+    mock_console_print.assert_called_with("error: message", style="yellow", markup=False)
