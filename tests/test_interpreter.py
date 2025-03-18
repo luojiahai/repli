@@ -1,6 +1,6 @@
 from pytest_mock import MockerFixture
 from repli.command import Command, Page
-from repli.interpreter import Interpreter, NoArgumentsError
+from repli.interpreter import Interpreter
 from rich import box
 
 
@@ -43,7 +43,7 @@ def test_interpreter_command_quit(mocker: MockerFixture):
     result = command.callback()
 
     assert command.name == "test"
-    assert command.description == "quit current page"
+    assert command.description == "quit page"
     assert result == False
 
 
@@ -185,11 +185,9 @@ def test_interpreter_render(mocker: MockerFixture):
 
 def test_interpreter_execute_no_args(mocker: MockerFixture):
     interpreter = Interpreter(page=mocker.MagicMock())
+    result = interpreter.execute(args=[])
 
-    try:
-        interpreter.execute(args=[])
-    except NoArgumentsError as e:
-        assert str(e) == "no arguments provided"
+    assert result == False
 
 
 def test_interpreter_execute_builtin_command(mocker: MockerFixture):
@@ -261,25 +259,6 @@ def test_interpreter_loop(mocker: MockerFixture):
         prompt=f"{interpreter.prompt} ", markup=False
     )
     mock_interpreter_execute.assert_called_once_with(args=["test", "arg1", "arg2"])
-
-
-def test_interpreter_loop_no_args(mocker: MockerFixture):
-    mock_console_clear = mocker.patch("repli.console.Console.clear")
-    mock_interpreter_render = mocker.patch("repli.interpreter.Interpreter.render")
-    mock_console_input = mocker.patch("repli.console.Console.input", return_value="")
-    mock_interpreter_execute = mocker.patch(
-        "repli.interpreter.Interpreter.execute", side_effect=NoArgumentsError
-    )
-
-    interpreter = Interpreter(page=mocker.MagicMock())
-    interpreter.loop(is_test=True)
-
-    mock_console_clear.assert_called_once()
-    mock_interpreter_render.assert_called_once()
-    mock_console_input.assert_called_once_with(
-        prompt=f"{interpreter.prompt} ", markup=False
-    )
-    mock_interpreter_execute.assert_called_once_with(args=[])
 
 
 def test_interpreter_loop_eof(mocker: MockerFixture):

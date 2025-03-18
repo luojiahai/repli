@@ -16,10 +16,6 @@ DEFAULT_NAME: str = "🐟"
 DEFAULT_PROMPT: str = ">"
 
 
-class NoArgumentsError(Exception):
-    pass
-
-
 class Interpreter:
     def __init__(
         self,
@@ -73,7 +69,7 @@ class Interpreter:
             return False
 
         callback = Builtin(callable=quit)
-        return Command(name=name, description="quit current page", callback=callback)
+        return Command(name=name, description="quit page", callback=callback)
 
     def header(self) -> Text:
         header: Text = Text(style="cyan")
@@ -124,7 +120,7 @@ class Interpreter:
 
     def execute(self, args: List[str]) -> bool:
         if not args:
-            raise NoArgumentsError("no arguments provided")
+            return False
 
         result: bool = False
         try:
@@ -155,8 +151,6 @@ class Interpreter:
                 line: str = console.input(prompt=f"{self.prompt} ", markup=False)
                 args: List[str] = line.split()
                 status = self.execute(args=args)
-            except NoArgumentsError:
-                status = False
             except EOFError:
                 status = True
                 console.print()

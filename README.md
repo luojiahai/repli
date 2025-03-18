@@ -25,7 +25,7 @@ Features:
 │ 3  nested page                                               │
 │                                                              │
 ├──────────────────────────────────────────────────────────────┤
-│ e  exit application  |  q  quit current page                 │
+│ e  exit application  |  q  quit page                         │
 └──────────────────────────────────────────────────────────────┘
 > 
 ```
