@@ -9,6 +9,8 @@
 
 It's a Python package for building command-line terminal applications.
 
+Preview of the [example](./example/) application in terminal:
+
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │ [myapp] home                                                 │
@@ -44,7 +46,7 @@ pip install repli
 
 ## Usage
 
-Example:
+[Example](./example/):
 
 ```python
 page = Page(name="0", description="home")
@@ -63,8 +65,6 @@ page.add_page(page=nested_page)
 interpreter = Interpreter(page=page, name="myapp")
 interpreter.loop()
 ```
-
-[Source](./example)
 
 ## Development
 
