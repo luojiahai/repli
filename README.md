@@ -9,12 +9,6 @@
 
 It's a Python package for building command-line terminal applications.
 
-Features:
-
-- Breadcrumbs
-- Interface panel
-- Pagination
-
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │ [myapp] home                                                 │
@@ -29,6 +23,18 @@ Features:
 └──────────────────────────────────────────────────────────────┘
 > 
 ```
+
+## Features
+
+- **Command**: A command is a pre-defined executable which can be one of the following:
+  - Python **native function**
+  - Shell command (**subprocess**)
+- **Page**: A page contains multiple commands or nested pages.
+- **User interface**:
+  - **Header**: The header contains breadcrumbs for page navigation.
+  - **Panel**: The panel contains the commands or pages for the current page.
+  - **Footer**: The footer contains built-in control commands.
+- **Input**: Given the commands or pages with their unique names (in the first column) in the panel, type the name and enter to execute the command or navigate to the page.
 
 ## Install
 
