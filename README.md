@@ -64,7 +64,7 @@ interpreter.loop()
 
 Requirements:
 
-- [Poetry](https://python-poetry.org/)
+[Poetry](https://python-poetry.org/)
 
 Setup environment:
 
