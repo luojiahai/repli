@@ -51,20 +51,20 @@ pip install repli
 [Example](./example/):
 
 ```python
-page = Page(description="home")
+page = Page("home")
 
-@page.command(type=NativeFunction, description="print hello world")
+@page.command(NativeFunction, "print hello world")
 def command_print_hello_world():
     print("hello world")
 
-@page.command(type=Subprocess, description="do something")
+@page.command(Subprocess, "do something")
 def command_do_something():
     return "echo something else"
 
-nested_page = Page(description="nested page")
-page.add_page(page=nested_page)
+nested_page = Page("nested page")
+page.add_page(nested_page)
 
-interpreter = Interpreter(page=page, name="myapp")
+interpreter = Interpreter(page, "myapp")
 interpreter.loop()
 ```
 
